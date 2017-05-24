@@ -1,3 +1,13 @@
+#!/usr/bin/env python
+__author__ = "Teemu Kataja"
+__copyright__ = "Copyright 2017, CSC - IT Center for Science"
+
+__license__ = "GPL"
+__version__ = "0.1"
+__maintainer__ = "Teemu kataja"
+__email__ = "teemu.kataja@csc.fi"
+__status__ = "Development"
+
 import mysql.connector, os, time, datetime, calendar, hashlib, sys, argparse
 
 # Establish database connection
@@ -7,11 +17,12 @@ db = mysql.connector.connect (host="localhost",
                               db="elixir",
                               buffered=True)
 
+cur = db.cursor()
+
 # This function checks if file transmission has been completed
-def checkFileTransmission(path):
+def check_file_transmission(path):
 
     passes = 0
-    p = False
 
     # Get file size in bits
     file_size = os.path.getsize(path)
@@ -21,16 +32,12 @@ def checkFileTransmission(path):
     time_now = calendar.timegm(time.gmtime())
 
     # Check if file already exists in database
-    cur = db.cursor()
     cur.execute('SELECT id, verified FROM files WHERE name="' + path + '";')
     result = cur.fetchall()
 
     if cur.rowcount>=1: # Records found: old file
         for row in result:
-            if row[1] == 1:
-                # File has already been verified, ignore this file and continue to the next file
-                p = False
-            else:
+            if row[1] == 0: # 0 = file not verified->check it
                 # Old file -> request old details from database
                 params = [row[0], path]
                 cur.execute('SELECT * FROM files WHERE id=%s AND name=%s;', params)
@@ -48,19 +55,14 @@ def checkFileTransmission(path):
                             params = [row[4]+1, row[0]]
                             cur.execute('UPDATE files SET passes=%s WHERE id=%s;', params)
                             passes = row[4]+1
-                            p = True
     else: # New file
         # New file -> add new entry to database
         params = [path, file_size, file_age]
         cur.execute('INSERT INTO files VALUES (NULL, %s, %s, %s, 0, 0);', params)
-        p = True
 
     # Execute database changes
     db.commit()
-    if p == True:
-        print(time_now, '>', path, ' Current size: ', file_size, ' Last updated: ', file_age, ' Number of passes: ', passes)
-    else:
-        print(path, ' has already been verified: stopping checking process')
+    print(time_now, '>', path, ' Current size: ', file_size, ' Last updated: ', file_age, ' Number of passes: ', passes)
     
     passed = False
     if passes >= 3:
@@ -72,7 +74,7 @@ def checkFileTransmission(path):
 
 
 # This function verifies file integrity by hashing a checksum from the file and comparing it to a given checksum
-def verifyFileIntegrity(path, key):
+def verify_file_integrity(path, key):
     
     # Generate md5 hash for file contents
     hash_md5 = hashlib.md5()
@@ -86,7 +88,6 @@ def verifyFileIntegrity(path, key):
     key_md5= key_md5.read()
 
     # Get id from database for updating 'verified' status
-    cur = db.cursor()
     cur.execute('SELECT id FROM files WHERE name="' + path + '";')
     result = cur.fetchall()
 
@@ -104,7 +105,20 @@ def verifyFileIntegrity(path, key):
             print('FILE ERROR with ', path, ': Transmitted file and md5checksum do not match')
     return path_md5 == key_md5 # Returns boolean value of comparison
 
-
+def is_verified(filename):
+    verified = False
+    cur.execute('SELECT verified FROM files WHERE name="' + filename + '";')
+    result = cur.fetchall()
+    if cur.rowcount>=1:
+        for row in result:
+            if row[0] == 1:
+                verified = True
+            else:
+                verified = False
+    else:
+        verified = False
+        
+    return verified
 
 '''*************************************************************'''
 #                         cmd-executable                          #
@@ -114,17 +128,17 @@ def main(arguments=None):
     path = parse_arguments(arguments).message
     
     # Take directory as input, and read all files in that directory
-    # Push all files through the two functions checkFileTransmission() and verifyFileIntegrity()
-    # Loop through the process at set time intervals, exclude verified files from the process
-    while True:
-        for filename in os.listdir(path):
-            if filename.endswith('.txt'):
-                time.sleep(1)
-                if checkFileTransmission(filename):
+    # Check if files have already been verified with isVerified(),
+    # if not, push them through checkFileTransmission() and verifyFileIntegrity()
+    # exclude verified files from the process
+    for filename in os.listdir(path):
+        if filename.endswith('.txt'):
+            if is_verified(filename):
+                print(filename, ' already verified')
+            else:
+                if check_file_transmission(filename):
                     key = filename + '.md5'
-                    verifyFileIntegrity(filename, key)
-        time.sleep(10)
-
+                    verify_file_integrity(filename, key)
     return
 
 # This function enables the script to intake parameters
@@ -147,12 +161,8 @@ http://img13.deviantart.net/c82b/i/2013/231/6/4/pink_panther_s_to_do_list_by_mak
 
 _ File size doesn't update for a long time, but code keeps incrementing passes
     - error/stopped column? or just select passes>=3 verified=0?
+    - incrementing has to stop at some point so as not to overload memory
 _ Testing
-_ Verified variable?
 _ Larger cache size for hash_md5?
     - 2^20 in pastesti example
-_ Running conditions?
-    - Check if directory contains files with verified=0 status?
-        - Make a new function out of it? if(ver=0){if(cFT){vFI}}
-    - Logged information?
 '''
