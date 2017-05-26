@@ -1,5 +1,5 @@
-import hashlib, os
-
+import hashlib, os, sys
+import argparse
 
 
 # This function generates  an md5 hash for a given file and saves it to a text file
@@ -15,10 +15,21 @@ def md5(path):
     print(path, ' created')
     return
 
-path = 'C:\\Users\\tekataja\\Desktop\\ELIXIR\\bigdir'
 
-for filename in os.listdir(path):
-    if filename.endswith('.txt'):
-        #print(os.path.join(path, filename)) # prints dir/filename
-        #print(filename)
-        md5(filename)
+def parse_arguments(arguments):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('path')
+
+    return parser.parse_args()
+
+
+def main(arguments=None):
+    args = parse_arguments(arguments)
+
+    for filename in os.listdir(args.path):
+        if filename.endswith('.txt'):
+            md5(filename)
+
+if __name__ == '__main__':
+    RETVAL = main()
+    sys.exit(RETVAL)
