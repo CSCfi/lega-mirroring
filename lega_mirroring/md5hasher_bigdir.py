@@ -13,7 +13,7 @@ def md5(path):
         file.write(hash_md5.hexdigest())
         file.close()
     print(path, ' created')
-    return
+    return hash_md5.hexdigest()
 
 
 def parse_arguments(arguments):
