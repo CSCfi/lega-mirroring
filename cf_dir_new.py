@@ -111,7 +111,7 @@ def db_increment_passes(path):
     return  # Return OK/ERR?
 
 
-def db_insert_new_file_into_db(path):
+def db_insert_new_file(path):
     """ This function creates a new database entry database
     table structure can be viewed in other\db_script.txt """
     file_size = get_file_size(path)
@@ -332,7 +332,26 @@ def is_verified(filename):
 
 
 def main(arguments=None):
-    # Logic here
+    """ This function runs the script when executed and given
+    a directory as parameter """
+    path = parse_arguments(arguments).message
+    
+    for file in os.listdir(path):
+        if file.endswith('.txt'):
+            if db_get_file_details(file):  # Old file
+                if get_file_size(file) > db_get_file_details(file)[2]:  # File size has changed
+                    db_update_file_details(file)
+                else:  # File size hasn't changed
+                    if get_time_now() - db_get_file_details(file)[3] > 60:  # File is older than 60s
+                        if db_get_file_details(file)[4] >= 3:  # At least 3 passes
+                            if hash_md5_for_file(file) == get_md5_from_file(file):  # Verify md5 checksum
+                                db_verify_file_integrity(file)
+                        else:  # Increment passes
+                            db_increment_passes(file)
+        log_event(path)
+            else:  # New file
+                db_insert_new_file(file)
+
     return
 
 
