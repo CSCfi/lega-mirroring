@@ -47,11 +47,11 @@ def db_get_file_details(path):
     if cur.rowcount >= 1:
         for row in result:
             # See other/db_script.txt for table structure
-            status = [row[0], 
-                      path, 
-                      row[2], 
-                      row[3], 
-                      row[4], 
+            status = [row[0],
+                      path,
+                      row[2],
+                      row[3],
+                      row[4],
                       row[5]]
     return status
 
@@ -153,21 +153,28 @@ def main(arguments=None):
     """ This function runs the script when executed and given
     a directory as parameter """
     path = parse_arguments(arguments).message
-    
     for file in os.listdir(path):
         if file.endswith('.txt'):
-            if db_get_file_details(file)[0] > 0:  # Old file
-                if get_file_size(file) > int(db_get_file_details(file)[2]):  # File size has changed
+            if db_get_file_details(file)[0] > 0:
+                # Old file
+                if get_file_size(file) > int(db_get_file_details(file)[2]):
+                    # File size has changed
                     db_update_file_details(file)
-                else:  # File size hasn't changed
-                    if get_time_now() - float(db_get_file_details(file)[3]) > 60:  # File is older than 60s
-                        if db_get_file_details(file)[4] >= 3:  # At least 3 passes
-                            if hash_md5_for_file(file) == get_md5_from_file(file):  # Verify md5 checksum
+                else:
+                    # File size hasn't changed
+                    if get_time_now() - float(db_get_file_details(file)[3]) > 60:
+                        # File is older than 60s
+                        if db_get_file_details(file)[4] >= 3:
+                            # At least 3 passes
+                            if hash_md5_for_file(file) == get_md5_from_file(file):
+                                # Verify md5 checksum
                                 db_verify_file_integrity(file)
-                        else:  # Increment passes
+                        else:
+                            # Increment passes
                             db_increment_passes(file)
                 log_event(file)
-            else:  # New file
+            else:
+                # New file
                 db_insert_new_file(file)
     return
 
