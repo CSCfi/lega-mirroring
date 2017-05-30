@@ -3,7 +3,7 @@ __author__ = "Teemu Kataja"
 __copyright__ = "Copyright 2017, CSC - IT Center for Science"
 
 __license__ = "GPL"
-__version__ = "0.1.3"
+__version__ = "0.2"
 __maintainer__ = "Teemu kataja"
 __email__ = "teemu.kataja@csc.fi"
 __status__ = "Development"
@@ -27,12 +27,173 @@ db = mysql.connector.connect(host="localhost",
 cur = db.cursor()
 
 
+
+
+
+''' NEW CODE (WIP) '''
+
+
+
+
+
+def get_file_size(path):
+    """ This function reads a file and returns
+    it's byte size as numeral string """
+    return os.path.getsize(path)
+
+
+def get_file_age(path):
+    """ This function reads a file and returns it's last
+    modified date as mtime(float) in string form """
+    return os.path.getmtime(path)
+
+
+def get_time_now():
+    """ This function returns the current time
+    as mtime(float) in string form """
+    return calendar.timegm(time.gmtime())
+
+
+def db_get_file_details(path):
+    """ This function queries the database for details
+    and returns a list of results of false """
+    db_file_id = ''
+    db_file_size = ''
+    db_file_age = ''
+    db_file_passes = ''
+    db_file_verified = ''
+    cur.execute('SELECT * '
+                'FROM files '
+                'WHERE name="' + path + '";')
+    result = cur.fetchall()
+    for row in result:
+        db_file_id = row[0]
+        #db_file_name = row[1] # marking this for clarity, path=row[1]
+        db_file_size = row[2]
+        db_file_age = row[3]
+        db_file_passes = row[4]
+        db_file_verified = row[5]
+    if db_file_size == 0:
+        status = False
+    else:
+        status = [db_file_id, 
+                  path, 
+                  db_file_size, 
+                  db_file_age, 
+                  db_file_passes, 
+                  db_file_verified]
+    return status
+
+def db_update_file_details(path):
+    """ This function updates file size and age to database
+    as well as resets the passes value to zero"""
+    file_size = get_file_size(path)
+    file_age = get_file_age(path)
+    file_id = get_file_status(path)[0]
+    params = [file_size, file_age, file_id]
+    cur.execute('UPDATE files '
+                'SET size=%s, '
+                'age=%s, '
+                'passes=0 '
+                'WHERE id=%s;',
+                params)
+    db.commit()
+    return  # Return OK/ERR?
+
+
+def db_increment_passes(path):
+    """ This function increments the number of passes by 1 """
+    file_id = get_file_status(path)[0]
+    cur.execute('UPDATE files '
+                'SET passes=passes+1 '
+                'WHERE id=' + file_id + ';')
+    db.commit()
+    return  # Return OK/ERR?
+
+
+def db_insert_new_file(path):
+    """ This function creates a new database entry database
+    table structure can be viewed in other\db_script.txt """
+    file_size = get_file_size(path)
+    file_age = get_file_age(path)
+    params = [path, file_size, file_age]
+    cur.execute('INSERT INTO files '
+                'VALUES (NULL, %s, %s, %s, 0, 0);',
+                params)
+    db.commit()
+    return  # Return OK/ERR?
+
+
+def log_event(path):
+    """ This function prints the event to log """
+    # REMOVE WHEN SOLVED
+    # Using db data here instead of current data,
+    # eg. get_file_size() and get_file_age()
+    # in case the data changes within a few seconds
+    # (although, not so important?)
+    time_now = get_time_now()
+    file_size = db_get_file_details(path)[2]
+    file_age = db_get_file_details(path)[3]
+    passes = db_get_file_details(path)[4]
+    print(time_now, '>', path,
+          ' Current size: ', file_size,
+          ' Last updated: ', file_age,
+          ' Number of passes: ', passes)
+    return  # Print event or return it here?
+
+
+def hash_md5_for_file(path):
+    """ This function reads a file and returns a
+    generated md5 checksum """
+    hash_md5 = hashlib.md5()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(4096), b''):
+            hash_md5.update(chunk)
+        path_md5 = hash_md5.hexdigest()
+    return path_md5
+
+
+def get_md5_from_file(path):
+    """ This function reads a file type file.txt.md5
+    and returns the  md5 checksum """
+    key_md5 = path + '.md5'
+    key_md5 = open(key_md5, 'r')
+    key_md5 = key_md5.read()
+    return key_md5
+
+
+def db_verify_file_integrity(path):
+    """ This function updates file verified status from 0 to 1 """
+    file_id = get_file_status(path)[0]
+    params = [1, file_id]
+    cur.execute('UPDATE files '
+                'SET verified=%s '
+                'WHERE id=%s;',
+                params)
+    db.commit()
+    return  # Return OK/ERR?
+
+
+
+
+
+
+
+''' OLD CODE '''
+
+
+'''
+
+
+#OLD CODE TO BE REMOVED ON NEXT COMMIT
+
+
 # This function checks if file transmission has been completed
 def check_file_transmission(path):
 
     passes = 0
 
-    # Get file size in bits
+    # Get file size in bytes
     file_size = os.path.getsize(path)
 
     # Get last modified datetime as float
@@ -159,10 +320,55 @@ def is_verified(filename):
         verified = False
     return verified
 
+
+
+# OLD CODE TO BE REMOVED ON NEXT COMMIT
+'''
+
+
 '''*************************************************************'''
 #                         cmd-executable                          #
 '''*************************************************************'''
 
+
+def main(arguments=None):
+    """ This function runs the script when executed and given
+    a directory as parameter """
+    path = parse_arguments(arguments).message
+    
+    for file in os.listdir(path):
+        if file.endswith('.txt'):
+            if db_get_file_details(file):  # Old file
+                if get_file_size(file) > db_get_file_details(file)[2]:  # File size has changed
+                    db_update_file_details(file)
+                else:  # File size hasn't changed
+                    if get_time_now() - db_get_file_details(file)[3] > 60:  # File is older than 60s
+                        if db_get_file_details(file)[4] >= 3:  # At least 3 passes
+                            if hash_md5_for_file(file) == get_md5_from_file(file):  # Verify md5 checksum
+                                db_verify_file_integrity(file)
+                        else:  # Increment passes
+                            db_increment_passes(file)
+        log_event(path)
+            else:  # New file
+                db_insert_new_file(file)
+
+    return
+
+
+def parse_arguments(arguments):
+    """ This function returns the parsed argument (path) """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('message')
+    return parser.parse_args(arguments)
+
+
+if __name__ == '__main__':
+    RETVAL = main()
+    sys.exit(RETVAL)
+
+
+'''
+#OLD
 
 def main(arguments=None):
     path = parse_arguments(arguments).message
@@ -192,15 +398,5 @@ if __name__ == '__main__':
     RETVAL = main()
     sys.exit(RETVAL)
 
-'''
-TODO. TODO. TODO, TODO, TODO, TODO, TODOOOOOOOO, DODODODOODOO.
-http://img13.deviantart.net/c82b/i/2013/231/6/4/pink_panther_s_to_do_list_by_makssarts-d6iuvby.jpg
-
-
-_ File size doesn't update for a long time, but code keeps incrementing passes
-    - error/stopped column? or just select passes>=3 verified=0?
-    - incrementing has to stop at some point so as not to overload memory
-_ Testing
-_ Larger cache size for hash_md5?
-    - 2^20 in pastesti example
+# OLD
 '''
