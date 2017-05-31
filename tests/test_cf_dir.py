@@ -15,7 +15,7 @@ def test_get_file_age():
 def test_get_time_now():
     assert cf_dir.get_time_now() == calendar.timegm(time.gmtime())
 
-# Not working
+
 def test_db_get_file_details():
     assert cf_dir.db_get_file_details('file100.txt') == {'id': 1, 'name': 'file100.txt', 'size': 6, 'age': 1496219121.3843114, 'passes': 3, 'verified': 1}
 
@@ -26,14 +26,3 @@ def test_hash_md5_for_file():
 
 def test_get_md5_from_file():
     assert cf_dir.get_md5_from_file('tests/testdata/file10.txt') == 'a8f5f167f44f4964e6c998dee827110c'
-    # for warning see:
-    # https://stackoverflow.com/questions/12118609/python-str-object-has-no-attribute-close
-
-''' How to test void db functions?
-
-def test_db_update_file_detail():
-def test_db_increment_passes():
-def test_db_insert_new_file():
-def test_db_verify_file_integrity():
-
-'''
