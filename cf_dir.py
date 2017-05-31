@@ -39,15 +39,11 @@ def get_time_now():
 def db_get_file_details(path):
     """ This function queries the database for details
     and returns a list of results or false """
-    status = {'id': 0,
-              'name': 0,
-              'size': 0,
-              'age': 0,
-              'passes': 0,
-              'verified': 0}
+    status = {...}
     cur.execute('SELECT * '
                 'FROM files '
-                'WHERE name="' + path + '";')
+                'WHERE name=%s;',
+                [path])
     result = cur.fetchall()
     if cur.rowcount >= 1:
         for row in result:
@@ -58,6 +54,8 @@ def db_get_file_details(path):
                       'age': float(row[3]),
                       'passes': row[4],
                       'verified': row[5]}
+    else:
+        status = False
     return status
 
 
@@ -160,23 +158,23 @@ def main(arguments=None):
     path = parse_arguments(arguments).message
     for file in os.listdir(path):
         if file.endswith('.txt'):
-            if db_get_file_details(file)['id'] > 0:
+            if db_get_file_details(file):
                 # Old file
                 if db_get_file_details(file)['verified'] == 0:
                     # File is not verified
                     if (get_file_size(file) >
-                        db_get_file_details(file)['size']):
+                            db_get_file_details(file)['size']):
                         # File size has changed
                         db_update_file_details(file)
                     else:
                         # File size hasn't changed
                         if (get_time_now() -
-                            db_get_file_details(file)['age']) > 60:
+                                db_get_file_details(file)['age']) > 60:
                             # File is older than 60s
                             if db_get_file_details(file)['passes'] >= 3:
                                 # At least 3 passes
                                 if (hash_md5_for_file(file) ==
-                                    get_md5_from_file(file)):
+                                        get_md5_from_file(file)):
                                     # Verify md5 checksum
                                     db_verify_file_integrity(file)
                             else:
