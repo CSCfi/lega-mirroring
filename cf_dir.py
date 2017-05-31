@@ -7,6 +7,7 @@ import calendar
 import hashlib
 import sys
 import argparse
+import logging
 
 # Establish database connection
 db = mysql.connector.connect(host="localhost",
@@ -16,6 +17,7 @@ db = mysql.connector.connect(host="localhost",
                              buffered=True)
 
 cur = db.cursor()
+logging.basicConfig(filename='log.log', level=logging.DEBUG)
 
 
 def get_file_size(path):
@@ -108,10 +110,9 @@ def log_event(path):
     file_size = db_get_file_details(path)['size']
     file_age = db_get_file_details(path)['age']
     file_passes = db_get_file_details(path)['passes']
-    print(time_now, '>', path,
-          ' Current size: ', file_size,
-          ' Last updated: ', file_age,
-          ' Number of passes: ', file_passes)
+    logging.info('%s > %s __ size: %s __ upd: %s __ p: %s' %
+                 (str(time_now), path, str(file_size),
+                  str(file_age), file_passes))
     return
 
 
@@ -129,10 +130,10 @@ def hash_md5_for_file(path):
 def get_md5_from_file(path):
     """ This function reads a file type file.txt.md5
     and returns the  md5 checksum """
-    key_md5 = path + '.md5'
-    key_md5 = open(key_md5, 'r')
-    key_md5 = key_md5.read()
-    return key_md5
+    path_to_md5 = path + '.md5'
+    with open(path_to_md5, 'r') as f:
+        md5 = f.read()
+    return md5
 
 
 def db_verify_file_integrity(path):
