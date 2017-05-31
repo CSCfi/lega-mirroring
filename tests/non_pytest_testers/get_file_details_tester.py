@@ -34,7 +34,7 @@ def get_file_details(path):
         db_file_age = row[3]
         db_file_passes = row[4]
         db_file_verified = row[5]
-    if db_file_size == 0:
+    if db_file_id == 0:
         status = False
     else:
         status = [db_file_id, 
