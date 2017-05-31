@@ -17,7 +17,7 @@ def test_get_time_now():
 
 # Not working
 def test_db_get_file_details():
-    assert cf_dir.db_get_file_details('tests/testdata/file10.txt') != [0, 0, 0, 0, 0, 0]
+    assert cf_dir.db_get_file_details('file100.txt') == {'id': 1, 'name': 'file100.txt', 'size': 6, 'age': 1496219121.3843114, 'passes': 3, 'verified': 1}
 
 
 def test_hash_md5_for_file():
