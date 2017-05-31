@@ -39,7 +39,12 @@ def get_time_now():
 def db_get_file_details(path):
     """ This function queries the database for details
     and returns a list of results or false """
-    status = [0, 0, 0, 0, 0, 0]
+    status = {'id': 0,
+              'name': 0,
+              'size': 0,
+              'age': 0,
+              'passes': 0,
+              'verified': 0}
     cur.execute('SELECT * '
                 'FROM files '
                 'WHERE name="' + path + '";')
@@ -47,12 +52,12 @@ def db_get_file_details(path):
     if cur.rowcount >= 1:
         for row in result:
             # See other/db_script.txt for table structure
-            status = [row[0],
-                      path,
-                      row[2],
-                      row[3],
-                      row[4],
-                      row[5]]
+            status = {'id': row[0],
+                      'name': path,
+                      'size': int(row[2]),
+                      'age': float(row[3]),
+                      'passes': row[4],
+                      'verified': row[5]}
     return status
 
 
@@ -61,7 +66,7 @@ def db_update_file_details(path):
     as well as resets the passes value to zero"""
     file_size = get_file_size(path)
     file_age = get_file_age(path)
-    file_id = get_file_status(path)[0]
+    file_id = db_get_file_details(path)['id']
     params = [file_size, file_age, file_id]
     cur.execute('UPDATE files '
                 'SET size=%s, '
@@ -75,8 +80,8 @@ def db_update_file_details(path):
 
 def db_increment_passes(path):
     """ This function increments the number of passes by 1 """
-    file_id = db_get_file_details(path)[0]
-    file_passes = db_get_file_details(path)[4]+1
+    file_id = db_get_file_details(path)['id']
+    file_passes = db_get_file_details(path)['passes']+1
     params = [file_passes, file_id]
     cur.execute('UPDATE files '
                 'SET passes=%s '
@@ -102,9 +107,9 @@ def db_insert_new_file(path):
 def log_event(path):
     """ This function prints the event to log """
     time_now = get_time_now()
-    file_size = db_get_file_details(path)[2]
-    file_age = db_get_file_details(path)[3]
-    file_passes = db_get_file_details(path)[4]
+    file_size = db_get_file_details(path)['size']
+    file_age = db_get_file_details(path)['age']
+    file_passes = db_get_file_details(path)['passes']
     print(time_now, '>', path,
           ' Current size: ', file_size,
           ' Last updated: ', file_age,
@@ -134,7 +139,7 @@ def get_md5_from_file(path):
 
 def db_verify_file_integrity(path):
     """ This function updates file verified status from 0 to 1 """
-    file_id = db_get_file_details(path)[0]
+    file_id = db_get_file_details(path)['id']
     params = [1, file_id]
     cur.execute('UPDATE files '
                 'SET verified=%s '
@@ -155,27 +160,33 @@ def main(arguments=None):
     path = parse_arguments(arguments).message
     for file in os.listdir(path):
         if file.endswith('.txt'):
-            if db_get_file_details(file)[0] > 0:
+            if db_get_file_details(file)['id'] > 0:
                 # Old file
-                if get_file_size(file) > int(db_get_file_details(file)[2]):
-                    # File size has changed
-                    db_update_file_details(file)
-                else:
-                    # File size hasn't changed
-                    if get_time_now() - float(db_get_file_details(file)[3]) > 60:
-                        # File is older than 60s
-                        if db_get_file_details(file)[4] >= 3:
-                            # At least 3 passes
-                            if hash_md5_for_file(file) == get_md5_from_file(file):
-                                # Verify md5 checksum
-                                db_verify_file_integrity(file)
-                        else:
-                            # Increment passes
-                            db_increment_passes(file)
-                log_event(file)
+                if db_get_file_details(file)['verified'] == 0:
+                    # File is not verified
+                    if (get_file_size(file) >
+                        db_get_file_details(file)['size']):
+                        # File size has changed
+                        db_update_file_details(file)
+                    else:
+                        # File size hasn't changed
+                        if (get_time_now() -
+                            db_get_file_details(file)['age']) > 60:
+                            # File is older than 60s
+                            if db_get_file_details(file)['passes'] >= 3:
+                                # At least 3 passes
+                                if (hash_md5_for_file(file) ==
+                                    get_md5_from_file(file)):
+                                    # Verify md5 checksum
+                                    db_verify_file_integrity(file)
+                            else:
+                                # Increment passes
+                                db_increment_passes(file)
+                    log_event(file)
             else:
                 # New file
                 db_insert_new_file(file)
+                log_event(file)
     return
 
 
