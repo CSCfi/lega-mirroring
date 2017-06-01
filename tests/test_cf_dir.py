@@ -9,6 +9,10 @@ def test_get_file_size():
 
 
 def test_get_file_age():
+    def getmtime(path):                                                          
+        """This is a monkeypatch function for os.path.getmtime() which returns
+        always a predefined constant value 1496209920.4538686"""
+        return 1496209920.4538686
     assert cf_dir.get_file_age('tests/testdata/file10.txt') == 1496209920.4538686
 
 
