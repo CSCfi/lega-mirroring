@@ -2,12 +2,14 @@ import requests
 import sys
 import argparse
 import logging
-import datetime
 
 # Use these parameters for testing
 #file_path = '/data/NA12878.mapped.ILLUMINA.bwa.CEU.high_coverage_pcr_free.20130906.bam.cip'
 #host_url = 'http://86.50.169.120:9090/file/'
-logging.basicConfig(filename='decrypt_log.log', level=logging.INFO)
+logging.basicConfig(filename='decrypt_log.log',
+                    format='%(asctime)s %(message)s',
+                    datefmt='%d-%M-%Y %I:%M:%S',
+                    level=logging.INFO)
 
 
 def decrypt(host_url, file_path):
@@ -23,12 +25,10 @@ def decrypt(host_url, file_path):
             for chunk in r.iter_content(chunk_size=1024):
                 if chunk:
                     f.write(chunk)
-        logging.info(str(datetime.datetime.now()) +
-                 ' http-request: ' + host_url +
+        logging.info(' http-request: ' + host_url +
                  ' path: ' + file_path)
     else:
-        logging.info(str(datetime.datetime.now()) +
-                 ' ERROR: Check that url and path are correct -'
+        logging.info(' ERROR: Check that url and path are correct -'
                  ' http-request: ' + host_url +
                  ' path: ' + file_path)
     return
