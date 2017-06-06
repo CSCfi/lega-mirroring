@@ -11,29 +11,6 @@ logging.basicConfig(filename='decrypt_log.log',
                     datefmt='%d-%m-%Y %I:%M:%S',
                     level=logging.INFO)
 
-'''
-def decrypt(host_url, file_path):
-    """ This function decrypts file type file.bam.cip
-    and saves the decrypted file to file.txt """
-    params = {'filePath': file_path,
-              'sourceFormat': 'aes128',
-              'sourceKey': 'aeskey',
-              'destinationFormat': 'plain'}
-    r = requests.get(host_url, params, stream=True)
-    print(r)  # testi
-    if r:
-        with open('decrypted_file.txt', 'wb+') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-        logging.info(' http-request: ' + host_url +
-                 ' path: ' + file_path)
-    else:
-        logging.info(' ERROR: Check that url and path are correct -'
-                 ' http-request: ' + host_url +
-                 ' path: ' + file_path)
-    return
-'''
 
 def decrypt(host_url, file_path):
     """ This function returns a stream of decrypted data """
@@ -66,9 +43,6 @@ def log_event(event, host, path):
                  ' http-request: ' + host +
                  ' path: ' + path)
     return
-
-
-
 
 
 '''*************************************************************'''
