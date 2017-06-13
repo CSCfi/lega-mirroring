@@ -17,7 +17,10 @@ db = mysql.connector.connect(host="localhost",
                              buffered=True)
 
 cur = db.cursor()
-logging.basicConfig(filename='log.log', level=logging.DEBUG)
+logging.basicConfig(filename='cf_log.log',
+                    format='%(asctime)s %(message)s',
+                    datefmt='%d-%m-%Y %I:%M:%S',
+                    level=logging.INFO)
 
 
 def get_file_size(path):
@@ -110,9 +113,8 @@ def log_event(path):
     file_size = db_get_file_details(path)['size']
     file_age = db_get_file_details(path)['age']
     file_passes = db_get_file_details(path)['passes']
-    logging.info('%s > %s __ size: %s __ upd: %s __ p: %s' %
-                 (str(time_now), path, str(file_size),
-                  str(file_age), file_passes))
+    logging.info(path + ' last updated: ' + str(file_age) +
+                 ' size: ' + str(file_size) + ' passes: ' + str(file_passes))
     return
 
 
