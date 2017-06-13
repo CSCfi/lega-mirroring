@@ -1,7 +1,7 @@
 This README is a WIP
 
 # Local EGA: Data Mirroring
-*Introduction to local ega*
+This git repository contains logic for Local EGA data mirroring project. Local EGA data mirroring is part of the [ELIXIR](https://www.elixir-europe.org/about-us) [EXCELERATE](https://www.elixir-europe.org/excelerate) [biobank node](http://www.elixir-finland.org/) development project in EU. This work package is developed by [CSC - IT Center for Science Ltd](https://www.csc.fi/csc) in Finland in co-operation with Nordic [Tryggve](https://neic.no/tryggve/) partners.
 
 ## Modules (scripts)
 ##### cf_dir.py
