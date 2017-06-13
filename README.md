@@ -53,5 +53,8 @@ NOTES:
 
 ```db_script.txt``` contains the creation script of the database table used by ```cf_dir.py``` to track file transmission and verification.
 
+##### Dependencies
+* ```decrypt_request.py``` contains import of python [requests](https://github.com/requests/requests) library
+
 ## How to install
 todo: python setup.py install, db connect config.ini
