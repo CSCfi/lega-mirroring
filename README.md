@@ -22,13 +22,14 @@ NOTES:
 * Should file extension be given as a parameter, e.g. ```cf-dir cip %cd%```, or be hard coded into the script?
 * cf-dir operations are logged to file cf_log.log in the working directory
 
-
+##### copy_file.py
 ```copy_file.py``` copies a file to a directory. This script can be run from command line by typing ```copy-file <path/file> <destination_directory>```. The function is able to copy large files with a built-in buffer size of 16 kB. ```copy-file```
 also copies metadata.
 
 NOTES:
 * copy-file operations are logged to file copy_log.log in the working directory *(target or destination directory?)*
 
+##### decrypt_request.py
 ```decrypt_request.py``` decrypts a file using ELIXIR's RES decryption microservice. This script can be run from command line
 by typing ```decrypt-request <host_url> <path/file>```. The decrypted file contents are saved to a plain .txt file in the working
 directory.
@@ -37,8 +38,9 @@ NOTES:
 * decrypt-request operations are logged to file decrypt_log.log in the working directory
 * Current buffer size is 1 kB. Should this be defined as a parameter as well, giving the user some freedom of
 memory control?
-* Read more about RES microservice <here> <-- put link here
+* Read more about RES microservice [here](https://github.com/elixir-europe/ega-data-api-v3-res_mvc)
 
+##### md5_checksum.py
 ```md5_checksum.py``` verifies file integrity using md5 checksums. This function is used to verify the integrity of decrypted
 files and should not be confused with the built-in md5-function inside cf_dir.py. This script can be run from command line by
 typing ```md5-checksum <path/file>```. The script will calculate an md5 checksum for given file and attempt to read the hash
