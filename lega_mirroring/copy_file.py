@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import shutil
 import argparse
 import sys
