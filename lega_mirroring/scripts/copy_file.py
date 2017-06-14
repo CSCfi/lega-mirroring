@@ -6,7 +6,7 @@ import logging
 
 logging.basicConfig(filename='copy_log.log',
                     format='%(asctime)s %(message)s',
-                    datefmt='%d-%m-%Y %I:%M:%S',
+                    datefmt='%d-%m-%Y %H:%M:%S',
                     level=logging.INFO)
 
 
