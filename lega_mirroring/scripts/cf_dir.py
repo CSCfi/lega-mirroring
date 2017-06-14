@@ -133,8 +133,12 @@ def get_md5_from_file(path):
     """ This function reads a file type file.txt.md5
     and returns the  md5 checksum """
     path_to_md5 = path + '.md5'
-    with open(path_to_md5, 'r') as f:
-        md5 = f.read()
+    md5 = False
+    if os.path.isfile(path_to_md5):
+        with open(path_to_md5, 'r') as f:
+            md5 = f.read()
+    if not md5:
+        logging.info(path + ' .md5 file not found')
     return md5
 
 
