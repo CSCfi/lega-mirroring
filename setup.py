@@ -11,7 +11,7 @@ def scripts_list():
             continue
         modulename = modulename.replace('.py', '')
         scriptname = modulename.replace('_', '-')
-        scripts.append('%s = lega_mirroring.%s:main' % (scriptname, modulename))
+        scripts.append('%s = lega_mirroring.scripts.%s:main' % (scriptname, modulename))
     return scripts
 
 
