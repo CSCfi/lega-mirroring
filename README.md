@@ -1,5 +1,3 @@
-This README is a WIP
-
 # Local EGA: Data Mirroring
 This git repository contains logic for Local EGA data mirroring project. Local EGA data mirroring is part of the [ELIXIR](https://www.elixir-europe.org/about-us) [EXCELERATE](https://www.elixir-europe.org/excelerate) [biobank node](http://www.elixir-finland.org/) development project in EU. This work package is developed by [CSC - IT Center for Science Ltd](https://www.csc.fi/csc) in Finland in co-operation with Nordic [Tryggve](https://neic.no/tryggve/) partners.
 
@@ -53,4 +51,31 @@ NOTES:
 * ```decrypt_request.py``` contains import of python [requests](https://github.com/requests/requests) library
 
 ## How to install
-todo: python setup.py install, db connect config.ini
+Clone a copy of this repository using ```git clone https://github.com/CSCfi/lega-mirroring```. Then run the setup in command prompt
+with ```python setup.py install```. The scripts are now installed. Next you must configure the scripts before they are ready to be used.
+You can change certain variable values in config.ini, which will be used by the scripts.
+
+Mainly, you need to define variables in section ```[database]```, as variables have been pre-defined for section ```[func_conf]```.
+```
+[database]
+host=<localhost or url to your mysql server>
+user=<login username to database>
+passwd=<login password to database>
+db=<working database directory>
+```
+Example:
+```
+[database]
+host=localhost
+user=root
+passwd=root
+db=lega
+```
+Other config.ini variables:
+```
+[func_conf]
+chunk_size=<int value>  #chunk size in bytes used in hashing
+age_limit=<int value>  #number of seconds until cf-dir starts to accumulate passes
+pass_limit=<int value>  #number of passes until cf-dir attempts to verify file
+```
+Example: values are already set in ```lega_mirroring/scripts/config.ini```
