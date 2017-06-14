@@ -18,8 +18,6 @@ from a corresponding ```file.type.md5``` and compares these hashes. If the check
 the file as verified in the database table. The verified file is henceforth excluded from the checking process.
 
 NOTES:
-* At this moment the script will fail if ```.md5``` file is not found
-* Should file extension be given as a parameter, e.g. ```cf-dir cip %cd%```, or be hard coded into the script?
 * cf-dir operations are logged to file cf_log.log in the working directory
 
 ##### copy_file.py
@@ -36,8 +34,6 @@ directory.
 
 NOTES:
 * decrypt-request operations are logged to file decrypt_log.log in the working directory
-* Current buffer size is 1 kB. Should this be defined as a parameter as well, giving the user some freedom of
-memory control?
 * Read more about RES microservice [here](https://github.com/elixir-europe/ega-data-api-v3-res_mvc)
 
 ##### md5_checksum.py
