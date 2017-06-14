@@ -31,7 +31,7 @@ db = mysql.connector.connect(host=c_host,
 cur = db.cursor()
 logging.basicConfig(filename='cf_log.log',
                     format='%(asctime)s %(message)s',
-                    datefmt='%d-%m-%Y %I:%M:%S',
+                    datefmt='%d-%m-%Y %H:%M:%S',
                     level=logging.INFO)
 
 
