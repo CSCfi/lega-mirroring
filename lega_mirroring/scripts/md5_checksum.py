@@ -3,10 +3,16 @@ import sys
 import argparse
 import logging
 import hashlib
+from configparser import ConfigParser
+
+# Read configuration details from config.ini
+config = ConfigParser()
+config.read('C:/Users/tekataja/Desktop/lega-mirroring/lega_mirroring/scripts/config.ini')
+c_chunk_size = config.getint('func_conf', 'chunk_size')
 
 logging.basicConfig(filename='md5checksum_log.log',
                     format='%(asctime)s %(message)s',
-                    datefmt='%d-%M-%Y %I:%M:%S',
+                    datefmt='%d-%M-%Y %H:%M:%S',
                     level=logging.INFO)
 
 
@@ -15,7 +21,7 @@ def hash_md5_for_file(path):
     generated md5 checksum """
     hash_md5 = hashlib.md5()
     with open(path, 'rb') as f:
-        for chunk in iter(lambda: f.read(4096), b''):
+        for chunk in iter(lambda: f.read(c_chunk_size), b''):
             hash_md5.update(chunk)
         path_md5 = hash_md5.hexdigest()
     return path_md5
