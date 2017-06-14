@@ -12,7 +12,7 @@ from configparser import ConfigParser
 
 # Read configuration details from config.ini
 config = ConfigParser()
-config.read('config.ini')
+config.read('C:/Users/tekataja/Desktop/lega-mirroring/lega_mirroring/scripts/config.ini')
 c_host = config.get('database', 'host')
 c_user = config.get('database', 'user')
 c_passwd = config.get('database', 'passwd')
@@ -187,11 +187,11 @@ def main(arguments=None):
                     else:
                         # File size hasn't changed
                         if (get_time_now() -
-                                db_get_file_details(file)['age']) >
-                        c_age_limit:
+                                db_get_file_details(file)['age'] >
+                                c_age_limit):
                             # File is older than c_pass_limit (see config.ini)
-                            if db_get_file_details(file)['passes'] >=
-                            c_pass_limit:
+                            if (db_get_file_details(file)['passes'] >=
+                                    c_pass_limit):
                                 # At least c_pass_limit passes (see config.ini)
                                 if (hash_md5_for_file(file) ==
                                         get_md5_from_file(file)):
