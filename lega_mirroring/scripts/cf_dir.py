@@ -8,12 +8,24 @@ import hashlib
 import sys
 import argparse
 import logging
+from configparser import ConfigParser
+
+# Read configuration details from config.ini
+config = ConfigParser()
+config.read('config.ini')
+c_host = config.get('database', 'host')
+c_user = config.get('database', 'user')
+c_passwd = config.get('database', 'passwd')
+c_db = config.get('database', 'db')
+c_hash_chunk_size = config.getint('func_conf', 'chunk_size')
+c_age_limit = config.getint('func_conf', 'age_limit')
+c_pass_limit = config.getint('func_conf', 'pass_limit')
 
 # Establish database connection
-db = mysql.connector.connect(host="localhost",
-                             user="root",
-                             passwd="root",
-                             db="elixir",
+db = mysql.connector.connect(host=c_host,
+                             user=c_user,
+                             passwd=c_passwd,
+                             db=c_db,
                              buffered=True)
 
 cur = db.cursor()
@@ -52,7 +64,6 @@ def db_get_file_details(path):
     result = cur.fetchall()
     if cur.rowcount >= 1:
         for row in result:
-            # See other/db_script.txt for table structure
             status = {'id': row[0],
                       'name': path,
                       'size': int(row[2]),
@@ -123,7 +134,7 @@ def hash_md5_for_file(path):
     generated md5 checksum """
     hash_md5 = hashlib.md5()
     with open(path, 'rb') as f:
-        for chunk in iter(lambda: f.read(4096), b''):
+        for chunk in iter(lambda: f.read(c_hash_chunk_size), b''):
             hash_md5.update(chunk)
         path_md5 = hash_md5.hexdigest()
     return path_md5
@@ -137,7 +148,7 @@ def get_md5_from_file(path):
     if os.path.isfile(path_to_md5):
         with open(path_to_md5, 'r') as f:
             md5 = f.read()
-    if not md5:
+    else:
         logging.info(path + ' .md5 file not found')
     return md5
 
@@ -176,10 +187,12 @@ def main(arguments=None):
                     else:
                         # File size hasn't changed
                         if (get_time_now() -
-                                db_get_file_details(file)['age']) > 60:
-                            # File is older than 60s
-                            if db_get_file_details(file)['passes'] >= 3:
-                                # At least 3 passes
+                                db_get_file_details(file)['age']) >
+                        c_age_limit:
+                            # File is older than c_pass_limit (see config.ini)
+                            if db_get_file_details(file)['passes'] >=
+                            c_pass_limit:
+                                # At least c_pass_limit passes (see config.ini)
                                 if (hash_md5_for_file(file) ==
                                         get_md5_from_file(file)):
                                     # Verify md5 checksum
