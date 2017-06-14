@@ -3,13 +3,19 @@ import requests
 import sys
 import argparse
 import logging
+from configparser import ConfigParser
+
+# Read configuration details from config.ini
+config = ConfigParser()
+config.read('C:/Users/tekataja/Desktop/lega-mirroring/lega_mirroring/scripts/config.ini')
+c_chunk_size = config.getint('func_conf', 'chunk_size')
 
 # Use these parameters for testing
 # file_path = '/data/NA12878.mapped.ILLUMINA.bwa.CEU.high_coverage_pcr_free.20130906.bam.cip'
 # host_url = 'http://86.50.169.120:9090/file/'
 logging.basicConfig(filename='decrypt_log.log',
                     format='%(asctime)s %(message)s',
-                    datefmt='%d-%m-%Y %I:%M:%S',
+                    datefmt='%d-%m-%Y %H:%M:%S',
                     level=logging.INFO)
 
 
@@ -28,7 +34,7 @@ def write_to_file(feed):
     """ This function handles a stream of data and writes
     it to file """
     with open('decrypted_file.txt', 'wb+') as f:
-        for chunk in feed.iter_content(chunk_size=1024):
+        for chunk in feed.iter_content(chunk_size=c_chunk):
             if chunk:
                 f.write(chunk)
     return
