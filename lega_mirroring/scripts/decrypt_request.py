@@ -5,8 +5,8 @@ import argparse
 import logging
 
 # Use these parameters for testing
-#file_path = '/data/NA12878.mapped.ILLUMINA.bwa.CEU.high_coverage_pcr_free.20130906.bam.cip'
-#host_url = 'http://86.50.169.120:9090/file/'
+# file_path = '/data/NA12878.mapped.ILLUMINA.bwa.CEU.high_coverage_pcr_free.20130906.bam.cip'
+# host_url = 'http://86.50.169.120:9090/file/'
 logging.basicConfig(filename='decrypt_log.log',
                     format='%(asctime)s %(message)s',
                     datefmt='%d-%m-%Y %I:%M:%S',
@@ -33,16 +33,16 @@ def write_to_file(feed):
                 f.write(chunk)
     return
 
-    
+
 def log_event(event, host, path):
     """ This function logs successes and failures to file """
     if event:
         logging.info(' OK: http-request: ' + host +
-                 ' path: ' + path)
+                     ' path: ' + path)
     else:
         logging.info(' ERROR: Check that url and path are correct -'
-                 ' http-request: ' + host +
-                 ' path: ' + path)
+                     ' http-request: ' + host +
+                     ' path: ' + path)
     return
 
 
