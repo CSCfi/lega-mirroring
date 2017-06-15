@@ -1,7 +1,7 @@
 # Local EGA: Data Mirroring
 This git repository contains scripts for Local EGA data mirroring project. Local EGA data mirroring is part of the [ELIXIR](https://www.elixir-europe.org/about-us) [EXCELERATE](https://www.elixir-europe.org/excelerate) [biobank node](http://www.elixir-finland.org/) development project in EU. This work package is developed by [CSC - IT Center for Science Ltd](https://www.csc.fi/csc) in Finland in co-operation with Nordic [Tryggve](https://neic.no/tryggve/) partners.
 
-## Modules (scripts)
+## Scripts
 ##### cf_dir.py
 ```cf_dir.py``` can be used to track file transmission. The name cf_dir stands for *Check Files in DIRectory*.
 This script can be run from command line by typing ```cf-dir <directory>```. ```cf-dir``` recursively checks all files
