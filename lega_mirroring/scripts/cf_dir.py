@@ -12,7 +12,7 @@ from configparser import ConfigParser
 
 # Read configuration details from config.ini
 config = ConfigParser()
-config.read('C:/Users/tekataja/Desktop/lega-mirroring/lega_mirroring/scripts/config.ini')
+config.read('set_path_to/config.ini')
 c_host = config.get('database', 'host')
 c_user = config.get('database', 'user')
 c_passwd = config.get('database', 'passwd')

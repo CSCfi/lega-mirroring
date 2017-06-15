@@ -7,7 +7,7 @@ from configparser import ConfigParser
 
 # Read configuration details from config.ini
 config = ConfigParser()
-config.read('C:/Users/tekataja/Desktop/lega-mirroring/lega_mirroring/scripts/config.ini')
+config.read('set_path_to/config.ini')
 c_chunk_size = config.getint('func_conf', 'chunk_size')
 
 logging.basicConfig(filename='md5checksum_log.log',
