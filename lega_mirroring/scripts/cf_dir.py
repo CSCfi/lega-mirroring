@@ -10,29 +10,36 @@ import argparse
 import logging
 from configparser import ConfigParser
 
-# Read configuration details from config.ini
-config = ConfigParser()
-config.read('set_path_to/config.ini')
-c_host = config.get('database', 'host')
-c_user = config.get('database', 'user')
-c_passwd = config.get('database', 'passwd')
-c_db = config.get('database', 'db')
-c_hash_chunk_size = config.getint('func_conf', 'chunk_size')
-c_age_limit = config.getint('func_conf', 'age_limit')
-c_pass_limit = config.getint('func_conf', 'pass_limit')
-
-# Establish database connection
-db = mysql.connector.connect(host=c_host,
-                             user=c_user,
-                             passwd=c_passwd,
-                             db=c_db,
-                             buffered=True)
-
-cur = db.cursor()
+# Log events to file
 logging.basicConfig(filename='cf_log.log',
                     format='%(asctime)s %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
                     level=logging.INFO)
+
+
+def get_conf(path_to_config):
+    """ This function reads configuration variables from an external file
+    and returns the configuration variables as a dictionary """
+    config = ConfigParser()
+    config.read(path_to_config)
+    conf = {'host': config.get('database', 'host'),
+            'user': config.get('database', 'user'),
+            'passwd': config.get('database', 'user'),
+            'db': config.get('database', 'db'),
+            'chunk_size': config.getint('func_conf', 'chunk_size'),
+            'age_limit': config.getint('func_conf', 'age_limit'),
+            'pass_limit': config.getint('func_conf', 'pass_limit')}
+    return conf
+
+
+def db_init(path_to_config):
+    """ This function initializes database connection and returns cursor """
+    db = mysql.connector.connect(host=get_conf(path_to_config)['host'],
+                                 user=get_conf(path_to_config)['user'],
+                                 passwd=get_conf(path_to_config)['passwd'],
+                                 db=get_conf(path_to_config)['db'],
+                                 buffered=True)
+    return db.cursor()
 
 
 def get_file_size(path):
@@ -53,10 +60,11 @@ def get_time_now():
     return calendar.timegm(time.gmtime())
 
 
-def db_get_file_details(path):
+def db_get_file_details(path, conf):
     """ This function queries the database for details
     and returns a list of results or false """
-    status = {...}
+    status = False
+    cur = db_init(conf)
     cur.execute('SELECT * '
                 'FROM files '
                 'WHERE name=%s;',
@@ -70,18 +78,19 @@ def db_get_file_details(path):
                       'age': float(row[3]),
                       'passes': row[4],
                       'verified': row[5]}
-    else:
-        status = False
+    #else:
+    #    status = False
     return status
 
 
-def db_update_file_details(path):
+def db_update_file_details(path, conf):
     """ This function updates file size and age to database
     as well as resets the passes value to zero"""
     file_size = get_file_size(path)
     file_age = get_file_age(path)
     file_id = db_get_file_details(path)['id']
     params = [file_size, file_age, file_id]
+    cur = db_init(conf)
     cur.execute('UPDATE files '
                 'SET size=%s, '
                 'age=%s, '
@@ -92,11 +101,12 @@ def db_update_file_details(path):
     return
 
 
-def db_increment_passes(path):
+def db_increment_passes(path, conf):
     """ This function increments the number of passes by 1 """
     file_id = db_get_file_details(path)['id']
     file_passes = db_get_file_details(path)['passes']+1
     params = [file_passes, file_id]
+    cur = db_init(conf)
     cur.execute('UPDATE files '
                 'SET passes=%s '
                 'WHERE id=%s;',
@@ -105,12 +115,13 @@ def db_increment_passes(path):
     return
 
 
-def db_insert_new_file(path):
+def db_insert_new_file(path, conf):
     """ This function creates a new database entry database
     table structure can be viewed in other\db_script.txt """
     file_size = get_file_size(path)
     file_age = get_file_age(path)
     params = [path, file_size, file_age]
+    cur = db_init(conf)
     cur.execute('INSERT INTO files '
                 'VALUES (NULL, %s, %s, %s, 0, 0);',
                 params)
@@ -129,12 +140,12 @@ def log_event(path):
     return
 
 
-def hash_md5_for_file(path):
+def hash_md5_for_file(path, conf):
     """ This function reads a file and returns a
     generated md5 checksum """
     hash_md5 = hashlib.md5()
     with open(path, 'rb') as f:
-        for chunk in iter(lambda: f.read(c_hash_chunk_size), b''):
+        for chunk in iter(lambda: f.read(get_conf(conf)['chunk_size']), b''):
             hash_md5.update(chunk)
         path_md5 = hash_md5.hexdigest()
     return path_md5
@@ -153,10 +164,11 @@ def get_md5_from_file(path):
     return md5
 
 
-def db_verify_file_integrity(path):
+def db_verify_file_integrity(path, conf):
     """ This function updates file verified status from 0 to 1 """
     file_id = db_get_file_details(path)['id']
     params = [1, file_id]
+    cur = db_init(conf)
     cur.execute('UPDATE files '
                 'SET verified=%s '
                 'WHERE id=%s;',
@@ -173,45 +185,49 @@ def db_verify_file_integrity(path):
 def main(arguments=None):
     """ This function runs the script when executed and given
     a directory as parameter """
-    path = parse_arguments(arguments).message
+    args = parse_arguments(arguments)
+    path = args.path_to_dir
+    conf = args.path_to_config
     for file in os.listdir(path):
         if file.endswith('.txt'):
-            if db_get_file_details(file):
+            if db_get_file_details(file, conf):
                 # Old file
-                if db_get_file_details(file)['verified'] == 0:
+                if db_get_file_details(file, conf)['verified'] == 0:
                     # File is not verified
                     if (get_file_size(file) >
-                            db_get_file_details(file)['size']):
+                            db_get_file_details(file, conf)['size']):
                         # File size has changed
-                        db_update_file_details(file)
+                        db_update_file_details(file, conf)
                     else:
                         # File size hasn't changed
                         if (get_time_now() -
-                                db_get_file_details(file)['age'] >
-                                c_age_limit):
+                                db_get_file_details(file, conf)['age'] >
+                                get_conf(conf)['age_limit']):
                             # File is older than c_pass_limit (see config.ini)
-                            if (db_get_file_details(file)['passes'] >=
-                                    c_pass_limit):
+                            if (db_get_file_details(file, conf)['passes'] >=
+                                    get_conf(conf)['pass_limit']):
                                 # At least c_pass_limit passes (see config.ini)
-                                if (hash_md5_for_file(file) ==
+                                if (hash_md5_for_file(file, conf) ==
                                         get_md5_from_file(file)):
                                     # Verify md5 checksum
-                                    db_verify_file_integrity(file)
+                                    db_verify_file_integrity(file, conf)
                             else:
                                 # Increment passes
-                                db_increment_passes(file)
+                                db_increment_passes(file, conf)
                     log_event(file)
             else:
                 # New file
-                db_insert_new_file(file)
+                db_insert_new_file(file, conf)
                 log_event(file)
     return
 
 
 def parse_arguments(arguments):
-    """ This function returns the parsed argument (path) """
+    """ This function returns the parsed arguments path to
+    target dir and location of configuration file """
     parser = argparse.ArgumentParser()
-    parser.add_argument('message')
+    parser.add_argument('path_to_dir')
+    parser.add_argument('path_to_config')
     return parser.parse_args(arguments)
 
 
