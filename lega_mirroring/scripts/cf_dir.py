@@ -20,7 +20,7 @@ logging.basicConfig(filename='cf_log.log',
 
 def get_conf(path_to_config):
     """ This function reads configuration variables from an external file
-    and returns the configuration variables as a dictionary """
+    and returns the configuration variables as a class object """
     config = ConfigParser()
     config.read(path_to_config)
     conf = {'host': config.get('database', 'host'),
