@@ -9,6 +9,7 @@ import sys
 import argparse
 import logging
 from configparser import ConfigParser
+from collections import namedtuple
 
 # Log events to file
 logging.basicConfig(filename='cf_log.log',
@@ -24,22 +25,23 @@ def get_conf(path_to_config):
     config.read(path_to_config)
     conf = {'host': config.get('database', 'host'),
             'user': config.get('database', 'user'),
-            'passwd': config.get('database', 'user'),
+            'passwd': config.get('database', 'passwd'),
             'db': config.get('database', 'db'),
-            'chunk_size': config.getint('func_conf', 'chunk_size'),
+            'chunk': config.getint('func_conf', 'chunk_size'),
             'age_limit': config.getint('func_conf', 'age_limit'),
             'pass_limit': config.getint('func_conf', 'pass_limit')}
-    return conf
+    conf_named = namedtuple("Config", conf.keys())(*conf.values())
+    return conf_named
 
 
-def db_init(path_to_config):
+def db_init(hostname, username, password, database):
     """ This function initializes database connection and returns cursor """
-    db = mysql.connector.connect(host=get_conf(path_to_config)['host'],
-                                 user=get_conf(path_to_config)['user'],
-                                 passwd=get_conf(path_to_config)['passwd'],
-                                 db=get_conf(path_to_config)['db'],
+    db = mysql.connector.connect(host=hostname,
+                                 user=username,
+                                 passwd=password,
+                                 db=database,
                                  buffered=True)
-    return db.cursor()
+    return db
 
 
 def get_file_size(path):
@@ -60,11 +62,11 @@ def get_time_now():
     return calendar.timegm(time.gmtime())
 
 
-def db_get_file_details(path, conf):
+def db_get_file_details(path, db):
     """ This function queries the database for details
     and returns a list of results or false """
     status = False
-    cur = db_init(conf)
+    cur = db.cursor()
     cur.execute('SELECT * '
                 'FROM files '
                 'WHERE name=%s;',
@@ -78,19 +80,17 @@ def db_get_file_details(path, conf):
                       'age': float(row[3]),
                       'passes': row[4],
                       'verified': row[5]}
-    #else:
-    #    status = False
     return status
 
 
-def db_update_file_details(path, conf):
+def db_update_file_details(path, db):
     """ This function updates file size and age to database
     as well as resets the passes value to zero"""
     file_size = get_file_size(path)
     file_age = get_file_age(path)
-    file_id = db_get_file_details(path)['id']
+    file_id = db_get_file_details(path, db)['id']
     params = [file_size, file_age, file_id]
-    cur = db_init(conf)
+    cur = db.cursor()
     cur.execute('UPDATE files '
                 'SET size=%s, '
                 'age=%s, '
@@ -101,12 +101,12 @@ def db_update_file_details(path, conf):
     return
 
 
-def db_increment_passes(path, conf):
+def db_increment_passes(path, db):
     """ This function increments the number of passes by 1 """
-    file_id = db_get_file_details(path)['id']
-    file_passes = db_get_file_details(path)['passes']+1
+    file_id = db_get_file_details(path, db)['id']
+    file_passes = db_get_file_details(path, db)['passes']+1
     params = [file_passes, file_id]
-    cur = db_init(conf)
+    cur = db.cursor()
     cur.execute('UPDATE files '
                 'SET passes=%s '
                 'WHERE id=%s;',
@@ -115,13 +115,13 @@ def db_increment_passes(path, conf):
     return
 
 
-def db_insert_new_file(path, conf):
+def db_insert_new_file(path, db):
     """ This function creates a new database entry database
     table structure can be viewed in other\db_script.txt """
     file_size = get_file_size(path)
     file_age = get_file_age(path)
     params = [path, file_size, file_age]
-    cur = db_init(conf)
+    cur = db.cursor()
     cur.execute('INSERT INTO files '
                 'VALUES (NULL, %s, %s, %s, 0, 0);',
                 params)
@@ -129,23 +129,23 @@ def db_insert_new_file(path, conf):
     return
 
 
-def log_event(path):
+def log_event(path, db):
     """ This function prints the event to log """
     time_now = get_time_now()
-    file_size = db_get_file_details(path)['size']
-    file_age = db_get_file_details(path)['age']
-    file_passes = db_get_file_details(path)['passes']
+    file_size = db_get_file_details(path, db)['size']
+    file_age = db_get_file_details(path, db)['age']
+    file_passes = db_get_file_details(path, db)['passes']
     logging.info(path + ' last updated: ' + str(file_age) +
                  ' size: ' + str(file_size) + ' passes: ' + str(file_passes))
     return
 
 
-def hash_md5_for_file(path, conf):
+def hash_md5_for_file(path, chunk_size):
     """ This function reads a file and returns a
     generated md5 checksum """
     hash_md5 = hashlib.md5()
     with open(path, 'rb') as f:
-        for chunk in iter(lambda: f.read(get_conf(conf)['chunk_size']), b''):
+        for chunk in iter(lambda: f.read(chunk_size), b''):
             hash_md5.update(chunk)
         path_md5 = hash_md5.hexdigest()
     return path_md5
@@ -164,11 +164,11 @@ def get_md5_from_file(path):
     return md5
 
 
-def db_verify_file_integrity(path, conf):
+def db_verify_file_integrity(path, db):
     """ This function updates file verified status from 0 to 1 """
-    file_id = db_get_file_details(path)['id']
+    file_id = db_get_file_details(path, db)['id']
     params = [1, file_id]
-    cur = db_init(conf)
+    cur = db.cursor()
     cur.execute('UPDATE files '
                 'SET verified=%s '
                 'WHERE id=%s;',
@@ -188,36 +188,44 @@ def main(arguments=None):
     args = parse_arguments(arguments)
     path = args.path_to_dir
     conf = args.path_to_config
+    # Get configuration values from external file
+    config = get_conf(conf)
+    # Establish database connection
+    db = db_init(config.host,
+                  config.user,
+                  config.passwd,
+                  config.db)
+    # Begin file checking process
     for file in os.listdir(path):
         if file.endswith('.txt'):
-            if db_get_file_details(file, conf):
+            if db_get_file_details(file, db):
                 # Old file
-                if db_get_file_details(file, conf)['verified'] == 0:
+                if db_get_file_details(file, db)['verified'] == 0:
                     # File is not verified
                     if (get_file_size(file) >
-                            db_get_file_details(file, conf)['size']):
+                            db_get_file_details(file, db)['size']):
                         # File size has changed
-                        db_update_file_details(file, conf)
+                        db_update_file_details(file, db)
                     else:
                         # File size hasn't changed
                         if (get_time_now() -
-                                db_get_file_details(file, conf)['age'] >
-                                get_conf(conf)['age_limit']):
+                                db_get_file_details(file, db)['age'] >
+                                config.age_limit):
                             # File is older than c_pass_limit (see config.ini)
-                            if (db_get_file_details(file, conf)['passes'] >=
-                                    get_conf(conf)['pass_limit']):
+                            if (db_get_file_details(file, db)['passes'] >=
+                                    config.pass_limit):
                                 # At least c_pass_limit passes (see config.ini)
-                                if (hash_md5_for_file(file, conf) ==
+                                if (hash_md5_for_file(file, config.chunk) ==
                                         get_md5_from_file(file)):
                                     # Verify md5 checksum
-                                    db_verify_file_integrity(file, conf)
+                                    db_verify_file_integrity(file, db)
                             else:
                                 # Increment passes
-                                db_increment_passes(file, conf)
-                    log_event(file)
+                                db_increment_passes(file, db)
+                    log_event(file, db)
             else:
                 # New file
-                db_insert_new_file(file, conf)
+                db_insert_new_file(file, db)
                 log_event(file)
     return
 
