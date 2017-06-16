@@ -4,8 +4,8 @@ This git repository contains scripts for Local EGA data mirroring project. Local
 ## Scripts
 ##### cf_dir.py
 ```cf_dir.py``` can be used to track file transmission. The name cf_dir stands for *Check Files in DIRectory*.
-This script can be run from command line by typing ```cf-dir <directory>```. ```cf-dir``` recursively checks all files
-in the current directory of a certain filetype and keeps track of them with a MySQL database table.
+This script can be run from command line by typing ```cf-dir <directory> <path/config.ini>```. ```cf-dir``` recursively checks all files
+in the current directory of a certain filetype and keeps track of them with a MySQL database table. A configuration file must be given.
 
 ##### Operating principle
 
@@ -17,6 +17,7 @@ the file as verified in the database table. The verified file is henceforth excl
 
 NOTES:
 * cf-dir operations are logged to file cf_log.log in the working directory
+* default config.ini can be found from lega_mirroring/scripts/
 
 ##### copy_file.py
 ```copy_file.py``` copies a file to a directory. This script can be run from command line by typing ```copy-file <path/file> <destination_directory>```. The function is able to copy large files with a built-in buffer size of 16 kB. ```copy-file```
