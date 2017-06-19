@@ -233,9 +233,13 @@ def main(arguments=None):
 def parse_arguments(arguments):
     """ This function returns the parsed arguments path to
     target dir and location of configuration file """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('path_to_dir')
-    parser.add_argument('path_to_config')
+    parser = argparse.ArgumentParser(description='Check files\' age and size'
+                                     ' in target directory and track them using'
+                                     ' a MySQL database.')
+    parser.add_argument('path_to_dir',
+                        help='target directory to be checked')
+    parser.add_argument('path_to_config',
+                        help='location of configuration file')
     return parser.parse_args(arguments)
 
 
