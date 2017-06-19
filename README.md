@@ -44,6 +44,13 @@ inside ```file.type.md5``` and compare these values.
 NOTES:
 * md5-checksum operations are logged to file md5checksum_log.log in the working directory
 
+##### create_md5.py
+```create_md5.py``` generates an md5 hash for a given file and saves it to an .md5 file. This script can be run from command line
+by typing ```create-md5 <path/file> <path/config.ini>```.
+
+NOTES:
+* create-md5 operations are logged to file create_md5_log.log in the working directory
+
 ##### find_errors.py
 ```find_errors.py``` can be run to query the database tracking table for files' ```passes``` and ```verified``` statuses. If
 a file has remained unchanged for a considerable amount of time and hasn't been verified, an error will be logged to file. This
