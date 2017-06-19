@@ -226,7 +226,7 @@ def main(arguments=None):
             else:
                 # New file
                 db_insert_new_file(file, db)
-                log_event(file)
+                log_event(file, db)
     return
 
 
