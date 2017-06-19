@@ -44,6 +44,14 @@ inside ```file.type.md5``` and compare these values.
 NOTES:
 * md5-checksum operations are logged to file md5checksum_log.log in the working directory
 
+##### find_errors.py
+```find_errors.py``` can be run to query the database tracking table for files' ```passes``` and ```verified``` statuses. If
+a file has remained unchanged for a considerable amount of time and hasn't been verified, an error will be logged to file. This
+script can be run from command line by typing ```find-errors <path/config.ini>```.
+
+NOTES:
+* file-errors operations are logged to file errors.log in the working directory
+
 ## Other
 
 ```db_script.txt``` contains the creation script of the database table used by ```cf_dir.py``` to track file transmission and verification.
@@ -78,5 +86,6 @@ Other config.ini variables:
 chunk_size=<int value>  #chunk size in bytes used in hashing
 age_limit=<int value>  #number of seconds until cf-dir starts to accumulate passes
 pass_limit=<int value>  #number of passes until cf-dir attempts to verify file
+age_error_threshold=<int_value>  #number of seconds the file must stay unchanged for an error to be logged
 ```
 Example: values are already set in ```lega_mirroring/scripts/config.ini```
