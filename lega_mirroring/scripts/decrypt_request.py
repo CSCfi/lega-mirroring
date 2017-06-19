@@ -4,11 +4,7 @@ import sys
 import argparse
 import logging
 from configparser import ConfigParser
-
-# Read configuration details from config.ini
-config = ConfigParser()
-config.read('set_path_to/config.ini')
-c_chunk_size = config.getint('func_conf', 'chunk_size')
+from collections import namedtuple
 
 # Use these parameters for testing
 # file_path = '/data/NA12878.mapped.ILLUMINA.bwa.CEU.high_coverage_pcr_free.20130906.bam.cip'
@@ -17,6 +13,16 @@ logging.basicConfig(filename='decrypt_log.log',
                     format='%(asctime)s %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
                     level=logging.INFO)
+
+
+def get_conf(path_to_config):
+    """ This function reads configuration variables from an external file
+    and returns the configuration variables as a class object """
+    config = ConfigParser()
+    config.read(path_to_config)
+    conf = {'chunk_size': config.getint('func_conf', 'chunk_size')}
+    conf_named = namedtuple("Config", conf.keys())(*conf.values())
+    return conf_named
 
 
 def decrypt(host_url, file_path):
@@ -30,11 +36,11 @@ def decrypt(host_url, file_path):
     return r
 
 
-def write_to_file(feed):
+def write_to_file(feed, chnk):
     """ This function handles a stream of data and writes
     it to file """
     with open('decrypted_file.txt', 'wb+') as f:
-        for chunk in feed.iter_content(chunk_size=c_chunk):
+        for chunk in feed.iter_content(chunk_size=chnk):
             if chunk:
                 f.write(chunk)
     return
@@ -60,7 +66,11 @@ def log_event(event, host, path):
 def main(arguments=None):
     """ This function runs the script with given arguments (host and path) """
     args = parse_arguments(arguments)
-    write_to_file(decrypt(args.host, args.path))
+    path = args.path
+    host = args.host
+    conf = args.path_to_config
+    config = get_conf(conf)
+    write_to_file(decrypt(host, path), config.chunk_size)
     return
 
 
@@ -71,6 +81,7 @@ def parse_arguments(arguments):
     parser = argparse.ArgumentParser()
     parser.add_argument('host')
     parser.add_argument('path')
+    parser.add_argument('path_to_config')
     return parser.parse_args(arguments)
 
 
