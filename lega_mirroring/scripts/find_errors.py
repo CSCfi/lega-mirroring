@@ -3,6 +3,8 @@ import mysql.connector
 import sys
 import logging
 import argparse
+import calendar
+import time
 from datetime import datetime
 from configparser import ConfigParser
 from collections import namedtuple
@@ -21,7 +23,8 @@ def get_conf(path_to_config):
     conf = {'host': config.get('database', 'host'),
             'user': config.get('database', 'user'),
             'passwd': config.get('database', 'passwd'),
-            'db': config.get('database', 'db')}
+            'db': config.get('database', 'db'),
+            'threshold': config.getint('func_conf', 'age_error_threshold')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
@@ -37,7 +40,7 @@ def db_init(hostname, username, password, database):
     return db
 
 
-def find_errors(db):
+def find_errors(db, threshold):
     """ This function queries the database for file details
     and determines if certain files have transfer problems and
     logs results to file """
@@ -49,15 +52,18 @@ def find_errors(db):
     if cur.rowcount >= 1:
         for row in result:
             name = row[0]
+            age_difference = (calendar.timegm(time.gmtime()) -
+                              float(row[1]))
             age = datetime.fromtimestamp(float(row[1])).strftime(
                 '%d-%m-%Y %H:%M:%S')
             passes = row[2]
             verified = row[3]
-            if (passes >= 5 and verified == 0):
-                errors = True
-                logging.info('Possible error with ' + name +
-                             ' (file not verified)'
-                             ' last updated at ' + age)
+            if (age_difference >= threshold):
+                if (passes >= 5 and verified == 0):
+                    errors = True
+                    logging.info('Possible error with ' + name +
+                                 ' (file not verified)'
+                                 ' last updated at ' + age)
     return errors
 
 
@@ -75,7 +81,7 @@ def main(arguments=None):
                   config.user,
                   config.passwd,
                   config.db)
-    if find_errors(db):
+    if find_errors(db, config.threshold):
         print('Errors found, see errors.log')
     else:
         print('No errors found.')
