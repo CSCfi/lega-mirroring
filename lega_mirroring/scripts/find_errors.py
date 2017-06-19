@@ -38,8 +38,9 @@ def db_init(hostname, username, password, database):
 
 
 def find_errors(db):
-    """ This function queries the database for details
-    and returns a list of results """
+    """ This function queries the database for file details
+    and determines if certain files have transfer problems and
+    logs results to file """
     errors = False
     cur = db.cursor()
     cur.execute('SELECT name, age, passes, verified '
