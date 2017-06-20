@@ -64,6 +64,11 @@ def find_errors(db, threshold):
                     logging.info('Possible error with ' + name +
                                  ' (file not verified)'
                                  ' last updated at ' + age)
+                elif (passes < 5):
+                    errors = True
+                    logging.info('Possible error with ' + name +
+                                 ' (file transfer stopped)'
+                                 ' last updated at ' + age)
     return errors
 
 
