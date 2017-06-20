@@ -18,14 +18,14 @@ the file as verified in the database table. The verified file is henceforth excl
 NOTES:
 * cf-dir operations are logged to file cf_log.log in the working directory
 * default config.ini can be found from lega_mirroring/scripts/
-
+- - - -
 ##### copy_file.py
 ```copy_file.py``` copies a file to a directory. This script can be run from command line by typing ```copy-file <path/file> <destination_directory>```. The function is able to copy large files with a built-in buffer size of 16 kB. ```copy-file```
 also copies metadata.
 
 NOTES:
 * copy-file operations are logged to file copy_log.log in the working directory *(target or destination directory?)*
-
+- - - -
 ##### decrypt_request.py
 ```decrypt_request.py``` decrypts a file using ELIXIR's RES decryption microservice. This script can be run from command line
 by typing ```decrypt-request <host_url> <path/file>```. The decrypted file contents are saved to a plain .txt file in the working
@@ -34,7 +34,7 @@ directory.
 NOTES:
 * decrypt-request operations are logged to file decrypt_log.log in the working directory
 * Read more about RES microservice [here](https://github.com/elixir-europe/ega-data-api-v3-res_mvc)
-
+- - - -
 ##### md5_checksum.py
 ```md5_checksum.py``` verifies file integrity using md5 checksums. This function is used to verify the integrity of decrypted
 files and should not be confused with the built-in md5-function inside cf_dir.py. This script can be run from command line by
@@ -43,14 +43,14 @@ inside ```file.type.md5``` and compare these values.
 
 NOTES:
 * md5-checksum operations are logged to file md5checksum_log.log in the working directory
-
+- - - -
 ##### create_md5.py
 ```create_md5.py``` generates an md5 hash for a given file and saves it to an .md5 file. This script can be run from command line
 by typing ```create-md5 <path/file> <path/config.ini>```.
 
 NOTES:
 * create-md5 operations are logged to file create_md5_log.log in the working directory
-
+- - - -
 ##### find_errors.py
 ```find_errors.py``` can be run to query the database tracking table for files' ```passes``` and ```verified``` statuses. If
 a file has remained unchanged for a considerable amount of time and hasn't been verified, an error will be logged to file. This
@@ -58,7 +58,7 @@ script can be run from command line by typing ```find-errors <path/config.ini>``
 
 NOTES:
 * file-errors operations are logged to file errors.log in the working directory
-
+- - - -
 ## Other
 
 ```db_script.txt``` contains the creation script of the database table used by ```cf_dir.py``` to track file transmission and verification.
