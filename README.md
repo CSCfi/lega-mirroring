@@ -58,7 +58,6 @@ script can be run from command line by typing ```find-errors <path/config.ini>``
 
 NOTES:
 * file-errors operations are logged to file errors.log in the working directory
-* add more error cases, e.g. file hasn't changed with < 5 passes
 
 ## Other
 
