@@ -1,6 +1,8 @@
 # Local EGA: Data Mirroring
 This git repository contains scripts for Local EGA data mirroring project. Local EGA data mirroring is part of the [ELIXIR](https://www.elixir-europe.org/about-us) [EXCELERATE](https://www.elixir-europe.org/excelerate) [biobank node](http://www.elixir-finland.org/) development project in EU. This work package is developed by [CSC - IT Center for Science Ltd](https://www.csc.fi/csc) in Finland in co-operation with Nordic [Tryggve](https://neic.no/tryggve/) partners.
 
+The scripts in this repository will be run in a [luigi](https://github.com/spotify/luigi) workflow according to [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/models/workflow.png).
+
 ## Scripts
 ##### cf_dir.py
 ```cf_dir.py``` can be used to track file transmission. The name cf_dir stands for *Check Files in DIRectory*.
@@ -11,9 +13,7 @@ in the current directory of a certain filetype and keeps track of them with a My
 
 ```cf-dir``` inspects file(s) *size* in bytes and *time* of last modification. If a file's size hasn't changed in
 some time, the script assumes that file transmission is complete and gives the file a pass mark on the database
-table. Upon accumulating enough of passes, the script calculates an md5 checksum for the file and reads a checksum
-from a corresponding ```file.type.md5``` and compares these hashes. If the checksums match, the script marks
-the file as verified in the database table. The verified file is henceforth excluded from the checking process.
+table. Files that have accumulated enough of passes are excluded from the checking process.
 
 NOTES:
 * cf-dir operations are logged to file cf_log.log in the working directory
