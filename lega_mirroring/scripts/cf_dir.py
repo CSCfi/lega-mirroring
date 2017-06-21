@@ -4,7 +4,7 @@ import os
 import time
 import datetime
 import calendar
-import hashlib
+#import hashlib
 import sys
 import argparse
 import logging
@@ -138,7 +138,7 @@ def log_event(path, db):
     logging.info(path + ' last updated: ' + str(file_age) +
                  ' size: ' + str(file_size) + ' passes: ' + str(file_passes))
     return
-
+'''
 
 def hash_md5_for_file(path, chunk_size):
     """ This function reads a file and returns a
@@ -175,7 +175,7 @@ def db_verify_file_integrity(path, db):
                 params)
     db.commit()
     return
-
+'''
 
 '''*************************************************************'''
 #                         cmd-executable                          #
@@ -195,6 +195,7 @@ def main(arguments=None):
                   config.user,
                   config.passwd,
                   config.db)
+    '''
     # Begin file checking process
     for file in os.listdir(path):
         if file.endswith('.txt'):
@@ -225,6 +226,28 @@ def main(arguments=None):
                     log_event(file, db)
             else:
                 # New file
+                db_insert_new_file(file, db)
+                log_event(file, db)
+    '''
+    # Begin file checking process
+    for file in os.listdir(path):
+        if file.endswith('.txt'):
+            if db_get_file_details(file, db):  # Old file
+                if db_get_file_details(file, db)['passes'] < config.pass_limit:
+                    # File transfer is incomplete
+                    if (get_file_size(file) >
+                            db_get_file_details(file, db)['size']):
+                        #   File size has changed
+                        db_update_file_details(file, db)
+                    else:  # File size hasn't changed
+                        if (get_time_now() -
+                                db_get_file_details(file, db)['age'] >
+                                config.age_limit):
+                            #   File hasn't changed in some time
+                            # Mark a pass on db table 0..5
+                            db_increment_passes(file, db)
+                    log_event(file, db)
+            else:  # New file
                 db_insert_new_file(file, db)
                 log_event(file, db)
     return
