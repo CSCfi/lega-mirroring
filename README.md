@@ -28,8 +28,7 @@ NOTES:
 - - - -
 ##### decrypt_request.py
 ```decrypt_request.py``` decrypts a file using ELIXIR's RES decryption microservice. This script can be run from command line
-by typing ```decrypt-request <host_url> <path/file>```. The decrypted file contents are saved to a plain .txt file in the working
-directory.
+by typing ```decrypt-request <host_url> <path/file> <path/config.ini>```. The decrypted file contents are saved to a plain .txt file in the working directory.
 
 NOTES:
 * decrypt-request operations are logged to file decrypt_log.log in the working directory
