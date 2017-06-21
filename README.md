@@ -38,8 +38,7 @@ NOTES:
 ##### md5_checksum.py
 ```md5_checksum.py``` verifies file integrity using md5 checksums. This function is used to verify the integrity of decrypted
 files and should not be confused with the built-in md5-function inside cf_dir.py. This script can be run from command line by
-typing ```md5-checksum <path/file>```. The script will calculate an md5 checksum for given file and attempt to read the hash
-inside ```file.type.md5``` and compare these values.
+typing ```md5-checksum <path/file> <path/config.ini>```. The script will calculate an md5 checksum for given file and attempt to read the hash inside ```file.type.md5``` and compare these values.
 
 NOTES:
 * md5-checksum operations are logged to file md5checksum_log.log in the working directory
