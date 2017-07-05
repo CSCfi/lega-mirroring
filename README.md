@@ -1,7 +1,7 @@
 # Local EGA: Data Mirroring
 This git repository contains scripts for Local EGA data mirroring project. Local EGA data mirroring is part of the [ELIXIR](https://www.elixir-europe.org/about-us) [EXCELERATE](https://www.elixir-europe.org/excelerate) [biobank node](http://www.elixir-finland.org/) development project in EU. This work package is developed by [CSC - IT Center for Science Ltd](https://www.csc.fi/csc) in Finland in co-operation with Nordic [Tryggve](https://neic.no/tryggve/) partners.
 
-The scripts in this repository will be run in a [luigi](https://github.com/spotify/luigi) workflow according to [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/models/workflow.png). Click [here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/README.md) to see how.
+The scripts in this repository will be run in a [luigi](https://github.com/spotify/luigi) workflow according to [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/workflow.png). Click [here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/README.md) to see how.
 
 ## Scripts
 ##### cf_dir.py
