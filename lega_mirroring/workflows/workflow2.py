@@ -13,13 +13,14 @@ class VerifyIntegrityOfTransferredFile(luigi.Task):
     config = luigi.Parameter()
 
     def run(self):
-        lega_mirroring.scripts.md5_checksum.main([self.file, self.config])
+        md5 = lega_mirroring.scripts.md5_checksum.main([self.file, self.config])
+        if not md5:
+            raise Exception('md5 mismatch')
         return
     
-    '''
     def output(self):
         return
-    '''
+
 
 class DecryptTransferredFile(luigi.Task):
     # WORKFLOW 2 STAGE 2/7
@@ -35,26 +36,30 @@ class DecryptTransferredFile(luigi.Task):
         lega_mirroring.scripts.decrypt_request.main([self.host, self.file, self.config])
         return
 
-    '''
-    def output():
+    def output(self):
         return
-    '''
-
-''' pseudocode: to do
+    
 
 class VerifyIntegrityOfDecryptedFile(luigi.Task):
     # WORKFLOW 2 STAGE 3/7
 
-    def requires():
-        return DecryptTransferredFile()
+    host = luigi.Parameter()
+    file = luigi.Parameter()
+    config = luigi.Parameter()
 
-    def run():
-        # md5_checksum.py
+    def requires(self):
+        return DecryptTransferredFile(host=self.host, file=self.file, config=self.config)
+
+    def run(self):
+        md5 = lega_mirroring.scripts.md5_checksum.main([self.file, self.config])
+        if not md5:
+            raise Exception('md5 mismatch')
         return
 
-    def output():
+    def output(self):
         return
 
+''' pseudocode: to do
 
 class EncryptVerifiedFile(luigi.Task):
     # WORKFLOW 2 STAGE 4/7
