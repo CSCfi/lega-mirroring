@@ -138,44 +138,7 @@ def log_event(path, db):
     logging.info(path + ' last updated: ' + str(file_age) +
                  ' size: ' + str(file_size) + ' passes: ' + str(file_passes))
     return
-'''
 
-def hash_md5_for_file(path, chunk_size):
-    """ This function reads a file and returns a
-    generated md5 checksum """
-    hash_md5 = hashlib.md5()
-    with open(path, 'rb') as f:
-        for chunk in iter(lambda: f.read(chunk_size), b''):
-            hash_md5.update(chunk)
-        path_md5 = hash_md5.hexdigest()
-    return path_md5
-
-
-def get_md5_from_file(path):
-    """ This function reads a file type file.txt.md5
-    and returns the  md5 checksum """
-    path_to_md5 = path + '.md5'
-    md5 = False
-    if os.path.isfile(path_to_md5):
-        with open(path_to_md5, 'r') as f:
-            md5 = f.read()
-    else:
-        logging.info(path + ' .md5 file not found')
-    return md5
-
-
-def db_verify_file_integrity(path, db):
-    """ This function updates file verified status from 0 to 1 """
-    file_id = db_get_file_details(path, db)['id']
-    params = [1, file_id]
-    cur = db.cursor()
-    cur.execute('UPDATE files '
-                'SET verified=%s '
-                'WHERE id=%s;',
-                params)
-    db.commit()
-    return
-'''
 
 '''*************************************************************'''
 #                         cmd-executable                          #
@@ -195,42 +158,9 @@ def main(arguments=None):
                   config.user,
                   config.passwd,
                   config.db)
-    '''
     # Begin file checking process
     for file in os.listdir(path):
-        if file.endswith('.txt'):
-            if db_get_file_details(file, db):
-                # Old file
-                if db_get_file_details(file, db)['verified'] == 0:
-                    # File is not verified
-                    if (get_file_size(file) >
-                            db_get_file_details(file, db)['size']):
-                        # File size has changed
-                        db_update_file_details(file, db)
-                    else:
-                        # File size hasn't changed
-                        if (get_time_now() -
-                                db_get_file_details(file, db)['age'] >
-                                config.age_limit):
-                            # File is older than c_pass_limit (see config.ini)
-                            if (db_get_file_details(file, db)['passes'] >=
-                                    config.pass_limit):
-                                # At least c_pass_limit passes (see config.ini)
-                                if (hash_md5_for_file(file, config.chunk) ==
-                                        get_md5_from_file(file)):
-                                    # Verify md5 checksum
-                                    db_verify_file_integrity(file, db)
-                            else:
-                                # Increment passes
-                                db_increment_passes(file, db)
-                    log_event(file, db)
-            else:
-                # New file
-                db_insert_new_file(file, db)
-                log_event(file, db)
-    '''
-    # Begin file checking process
-    for file in os.listdir(path):
+        file = os.path.join(path, file)
         if file.endswith('.txt'):
             if db_get_file_details(file, db):  # Old file
                 if db_get_file_details(file, db)['passes'] < config.pass_limit:
