@@ -64,7 +64,7 @@ def main(arguments=None):
                      ' From: ' + args.path +
                      ' Hashed md5: ' + path_md5 +
                      ' Received md5: ' + key_md5)
-    return
+    return (path_md5 == key_md5)
 
 
 def parse_arguments(arguments):
