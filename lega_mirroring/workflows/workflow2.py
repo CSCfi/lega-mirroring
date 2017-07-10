@@ -66,48 +66,68 @@ class VerifyIntegrityOfDecryptedFile(luigi.Task):
     def output(self):
         return luigi.LocalTarget('output/3.txt')
 
-''' pseudocode: to do
 
 class EncryptVerifiedFile(luigi.Task):
     # WORKFLOW 2 STAGE 4/7
 
-    def requires():
-        return VerifyIntegrityOfDecryptedFile()
+    file = luigi.Parameter()
+    config = luigi.Parameter()
 
-    def run():
-        # --encrypt_request.py--
+    def requires(self):
+        return VerifyIntegrityOfDecryptedFile(file=self.file, config=self.config)
+
+    def run(self):
+        # Add / in front of filename for linux
+        lega_mirroring.scripts.res.main(['encrypt', ('/' + self.file), self.config])
+        with self.output().open('w') as fd:
+            fd.write(str(self.file))
         return
 
-    def output():
-        return
+    def output(self):
+        return luigi.LocalTarget('output/4.txt')
 
 
 class CreateHashForEncryptedFile(luigi.Task):
     # WORKFLOW 2 STAGE 5/7
 
-    def requires():
-        return EncryptVerifiedFile()
+    file = luigi.Parameter()
+    config = luigi.Parameter()
 
-    def run():
-        # create_md5.py
+    def requires(self):
+        return EncryptVerifiedFile(file=self.file, config=self.config)
+
+    def run(self):
+        filename_encr = self.file.replace('.cip', '.txt')
+        lega_mirroring.scripts.create_md5.main([filename_encr, self.config])
+        with self.output().open('w') as fd:
+            fd.write(str(self.file))
         return
 
-    def output():
-        return
+    def output(self):
+        return luigi.LocalTarget('output/5.txt')
 
 
 class ArchiveFile(luigi.Task):
     # WORKFLOW 2 STAGE 6/7
 
-    def requires():
-        return CreateHashForEncryptedFile()
+    file = luigi.Parameter()
+    destination = luigi.Parameter()
+    config = luigi.Parameter()
 
-    def run():
-        # copy_file.py
+    def requires(self):
+        return CreateHashForEncryptedFile(file=self.file, config=self.config)
+
+    def run(self):
+        lega_mirroring.scripts.copy_file.main([self.file, self.destination])
+        with self.output().open('w') as fd:
+            fd.write(str(self.file))
         return
 
-    def output():
-        return
+    def output(self):
+        return luigi.LocalTarget('output/6.txt')
+
+
+''' to do
 
 
 class StoreFileLocationToDB(luigi.Task):
