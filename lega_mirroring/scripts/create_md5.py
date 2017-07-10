@@ -35,6 +35,8 @@ def hash_md5_for_file(path, chunk_size):
                 md5 = hash_md5.hexdigest()
             with open(path + '.md5', 'w') as f:
                 f.write(md5)
+    else:
+        raise Exception('file ' + path + ' not found')
     return md5
 
 
