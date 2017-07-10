@@ -32,6 +32,8 @@ def decrypt(host_url, file_path):
               'sourceKey': 'aeskey',
               'destinationFormat': 'plain'}
     r = requests.get(host_url, params, stream=True)
+    if not r:
+        raise Exception('decryption failed')
     log_event(r, host_url, file_path)
     return r
 
