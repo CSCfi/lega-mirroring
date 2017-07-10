@@ -16,10 +16,12 @@ class VerifyIntegrityOfTransferredFile(luigi.Task):
         md5 = lega_mirroring.scripts.md5_checksum.main([self.file, self.config])
         if not md5:
             raise Exception('md5 mismatch')
+        with self.output().open('w') as fd:
+            fd.write(str(self.file))
         return
     
     def output(self):
-        return
+        return luigi.LocalTarget('output/1.txt')
 
 
 class DecryptTransferredFile(luigi.Task):
@@ -33,11 +35,14 @@ class DecryptTransferredFile(luigi.Task):
         return VerifyIntegrityOfTransferredFile(file=self.file, config=self.config)
 
     def run(self):
-        lega_mirroring.scripts.decrypt_request.main([self.host, self.file, self.config])
+        # Add / in front of filename for linux
+        lega_mirroring.scripts.decrypt_request.main([self.host, ('/' + self.file), self.config])
+        with self.output().open('w') as fd:
+            fd.write(str(self.file))
         return
 
     def output(self):
-        return
+        return luigi.LocalTarget('output/2.txt')
     
 
 class VerifyIntegrityOfDecryptedFile(luigi.Task):
@@ -51,13 +56,17 @@ class VerifyIntegrityOfDecryptedFile(luigi.Task):
         return DecryptTransferredFile(host=self.host, file=self.file, config=self.config)
 
     def run(self):
-        md5 = lega_mirroring.scripts.md5_checksum.main([self.file, self.config])
+        # remove .cip extension from filename
+        filename_decr = self.file.replace('.cip', '.txt')
+        md5 = lega_mirroring.scripts.md5_checksum.main([filename_decr, self.config])
         if not md5:
             raise Exception('md5 mismatch')
+        with self.output().open('w') as fd:
+            fd.write(str(self.file))
         return
 
     def output(self):
-        return
+        return luigi.LocalTarget('output/3.txt')
 
 ''' pseudocode: to do
 
