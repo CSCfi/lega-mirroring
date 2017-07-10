@@ -1,6 +1,6 @@
 import luigi
 import lega_mirroring.scripts.md5_checksum
-import lega_mirroring.scripts.decrypt_request
+import lega_mirroring.scripts.res
 #import lega_mirroring.scripts.encrypt_request #stage 4
 import lega_mirroring.scripts.create_md5
 import lega_mirroring.scripts.copy_file
@@ -27,7 +27,6 @@ class VerifyIntegrityOfTransferredFile(luigi.Task):
 class DecryptTransferredFile(luigi.Task):
     # WORKFLOW 2 STAGE 2/7
 
-    host = luigi.Parameter()
     file = luigi.Parameter()
     config = luigi.Parameter()
 
@@ -36,7 +35,7 @@ class DecryptTransferredFile(luigi.Task):
 
     def run(self):
         # Add / in front of filename for linux
-        lega_mirroring.scripts.decrypt_request.main([self.host, ('/' + self.file), self.config])
+        lega_mirroring.scripts.res.main(['decrypt', ('/' + self.file), self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
         return
@@ -48,12 +47,11 @@ class DecryptTransferredFile(luigi.Task):
 class VerifyIntegrityOfDecryptedFile(luigi.Task):
     # WORKFLOW 2 STAGE 3/7
 
-    host = luigi.Parameter()
     file = luigi.Parameter()
     config = luigi.Parameter()
 
     def requires(self):
-        return DecryptTransferredFile(host=self.host, file=self.file, config=self.config)
+        return DecryptTransferredFile(file=self.file, config=self.config)
 
     def run(self):
         # remove .cip extension from filename
