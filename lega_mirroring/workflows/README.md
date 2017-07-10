@@ -13,4 +13,10 @@ Workflow 1 can be run from command line by typing:
 ## Workflow 2: Everything else
 Workflow 2 is used to run all the other steps as described in [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/workflow.png).
 
-To be written: how to run workflow 2
+Workflow 2 in it's current state (f0a1ba7 @ 10.7.) can be run from command line by typing:
+
+`luigi --module workflow2 ArchiveFile --file C:\..\file.txt --destination C:\..\destination --config C:\..\config.ini`
+
+The given file is carried out through the following processes: (1) after-transfer md5 checksum, (2) decryption, (3) after-decryption md5
+checksum, (4) encryption, (5) after-encryption md5 hash generation, (6) moving file to destination end storage location. (to do: step (7)
+save end storage location to tracking table)
