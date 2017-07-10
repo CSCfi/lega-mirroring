@@ -161,7 +161,7 @@ def main(arguments=None):
     # Begin file checking process
     for file in os.listdir(path):
         file = os.path.join(path, file)
-        if file.endswith('.txt'):
+        if file.endswith('.txt' or '.cip'):  #.txt for testing
             if db_get_file_details(file, db):  # Old file
                 if db_get_file_details(file, db)['passes'] < config.pass_limit:
                     # File transfer is incomplete
