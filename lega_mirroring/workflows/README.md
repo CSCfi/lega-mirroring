@@ -17,6 +17,12 @@ Workflow 2 in it's current state (f0a1ba7 @ 10.7.) can be run from command line 
 
 `luigi --module workflow2 ArchiveFile --file C:\..\file.txt --destination C:\..\destination --config C:\..\config.ini`
 
-The given file is carried out through the following processes: (1) after-transfer md5 checksum, (2) decryption, (3) after-decryption md5
-checksum, (4) encryption, (5) after-encryption md5 hash generation, (6) moving file to destination end storage location. (to do: step (7)
-save end storage location to tracking table)
+The given file is carried out through the following processes: 
+* (1) after-transfer md5 checksum, 
+* (2) decryption, 
+* (3) after-decryption md5 checksum, 
+* (4) encryption, 
+* (5) after-encryption md5 hash generation, 
+* (6) moving file to destination end storage location. 
+
+(to do: step (7) save end storage location to tracking table)
