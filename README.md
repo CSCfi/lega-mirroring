@@ -39,7 +39,7 @@ Example decryption:
 `res decrypt file.bam.cip config.ini`. The decrypted contents are saved to `file.bam` in the working directory.
 
 NOTES:
-* decrypt-request operations are logged to file decrypt_log.log in the working directory
+* res operations are logged to file res_log.log in the working directory
 * Read more about RES microservice [here](https://github.com/elixir-europe/ega-data-api-v3-res_mvc)
 - - - -
 ##### md5_checksum.py
