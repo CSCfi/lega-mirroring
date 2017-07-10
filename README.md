@@ -26,9 +26,20 @@ also copies metadata.
 NOTES:
 * copy-file operations are logged to file copy_log.log in the working directory *(target or destination directory?)*
 - - - -
-##### decrypt_request.py
+##### res.py
 ```decrypt_request.py``` decrypts a file using ELIXIR's RES decryption microservice. This script can be run from command line
 by typing ```decrypt-request <host_url> <path/file> <path/config.ini>```. The decrypted file contents are saved to a plain .txt file in the working directory.
+
+`res.py` is a multifunctional script utilizing ELIXIR's RES microservice. It can be used to either encrypt or decrypt a given file.
+This script can be run from command line by typing `res <method> <path/file> <path/config.ini>`.
+
+Example encryption:
+
+`res encrypt file.bam config.ini`. The encrypted contents are saved to `file.bam.cip` in the working directory.
+
+Example decryption:
+
+`res decrypt file.bam.cip config.ini`. The decrypted contents are saved to `file.bam` in the working directory.
 
 NOTES:
 * decrypt-request operations are logged to file decrypt_log.log in the working directory
