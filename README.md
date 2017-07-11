@@ -20,11 +20,10 @@ NOTES:
 * default config.ini can be found from lega_mirroring/scripts/
 - - - -
 ##### copy_file.py
-```copy_file.py``` copies a file to a directory. This script can be run from command line by typing ```copy-file <path/file> <destination_directory>```. The function is able to copy large files with a built-in buffer size of 16 kB. ```copy-file```
-also copies metadata.
+```copy_file.py``` copies a file to a directory. This script can be run from command line by typing ```copy-file <path/file> <destination_directory>```.  ```copy-file``` also copies metadata.
 
 NOTES:
-* copy-file operations are logged to file copy_log.log in the working directory *(target or destination directory?)*
+* copy-file operations are logged to file copy_log.log in the working directory
 - - - -
 ##### res.py
 `res.py` is a multifunctional script utilizing ELIXIR's RES microservice. It can be used to either encrypt or decrypt a given file.
@@ -41,6 +40,7 @@ Example decryption:
 NOTES:
 * res operations are logged to file res_log.log in the working directory
 * Read more about RES microservice [here](https://github.com/elixir-europe/ega-data-api-v3-res_mvc)
+* `[func_conf] res_url=<url>` in `config.ini` must be configured with the url of an active RES microservice.
 - - - -
 ##### md5_checksum.py
 ```md5_checksum.py``` verifies file integrity using md5 checksums. This function is used to verify the integrity of decrypted
@@ -71,6 +71,8 @@ NOTES:
 
 ##### Dependencies
 * ```decrypt_request.py``` contains import of python [requests](https://github.com/requests/requests) library
+* `workflow1.py` and `workflow2.py` contains import of python [luigi](https://github.com/spotify/luigi) library. (the scripts can also
+be run manually without the use of luigi workflow)
 
 ## How to install
 Clone a copy of this repository using ```git clone https://github.com/CSCfi/lega-mirroring```. Then run the setup in command prompt
@@ -100,5 +102,6 @@ chunk_size=<int value>  #chunk size in bytes used in hashing
 age_limit=<int value>  #number of seconds until cf-dir starts to accumulate passes
 pass_limit=<int value>  #number of passes until cf-dir attempts to verify file
 age_error_threshold=<int_value>  #number of seconds the file must stay unchanged for an error to be logged
+res_url=<url>  #url to an active res microservice
 ```
 Example: values are already set in ```lega_mirroring/scripts/config.ini```
