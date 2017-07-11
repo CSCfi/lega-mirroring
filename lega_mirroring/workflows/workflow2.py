@@ -2,7 +2,7 @@ import luigi
 import lega_mirroring.scripts.md5_checksum
 import lega_mirroring.scripts.res
 import lega_mirroring.scripts.create_md5
-import lega_mirroring.scripts.copy_file
+import lega_mirroring.scripts.move
 #import lega_mirroring.scripts.storeloc #stage 7, script not yet created
 #import lega_mirroring.scripts.start #script not yet created
 
@@ -118,7 +118,7 @@ class ArchiveFile(luigi.Task):
         return CreateHashForEncryptedFile(file=self.file, config=self.config)
 
     def run(self):
-        lega_mirroring.scripts.copy_file.main([self.file, self.destination])
+        lega_mirroring.scripts.move.main([self.file, self.destination])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
         return
