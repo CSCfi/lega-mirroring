@@ -4,7 +4,6 @@ import lega_mirroring.scripts.cf_dir
 class CheckFilesInDirectory(luigi.Task):
     # Luigi class for WORKFLOW 1
 
-    directory = luigi.Parameter()
     config = luigi.Parameter()
 
     '''
@@ -17,5 +16,5 @@ class CheckFilesInDirectory(luigi.Task):
     def run(self):
         ''' This function starts the file transfer checking process
         as described in lega_mirroring/scripts/cf_dir.py '''
-        lega_mirroring.scripts.cf_dir.main([self.directory, self.config])
+        lega_mirroring.scripts.cf_dir.main([self.config])
         return
