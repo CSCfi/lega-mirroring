@@ -15,7 +15,7 @@ Workflow 1 can be run from command line by typing:
 ## Workflow 2: Everything else
 Workflow 2 is used to run all the other steps as described in [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/workflow.png).
 
-Workflow 2 in it's current state (f0a1ba7 @ 10.7.) can be run from command line by typing:
+Workflow 2 in it's current state can be run from command line by typing:
 
 `luigi --module workflow2 ArchiveFile --file C:\..\file.txt --config C:\..\config.ini`
 
