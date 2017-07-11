@@ -7,9 +7,9 @@ import calendar
 import sys
 import argparse
 import logging
+import shutil
 from configparser import ConfigParser
 from collections import namedtuple
-import lega_mirroring.scripts.move
 
 # Log events to file
 logging.basicConfig(filename='cf_log.log',
@@ -181,7 +181,7 @@ def main(arguments=None):
                     log_event(file, db)
                 else:
                     # move file from receiving(wf1) to processing(wf2)
-                    lega_mirroring.scripts.move.main([file, config.path_processing])
+                    shutil.move(file, config.path_processing)
             else:  # New file
                 db_insert_new_file(file, db)
                 log_event(file, db)
