@@ -111,14 +111,13 @@ class ArchiveFile(luigi.Task):
     # WORKFLOW 2 STAGE 6/7
 
     file = luigi.Parameter()
-    destination = luigi.Parameter()
     config = luigi.Parameter()
 
     def requires(self):
         return CreateHashForEncryptedFile(file=self.file, config=self.config)
 
     def run(self):
-        lega_mirroring.scripts.move.main([self.file, self.destination])
+        lega_mirroring.scripts.move.main([self.file, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
         return
@@ -131,11 +130,10 @@ class StoreFileLocationToDB(luigi.Task):
     # WORKFLOW 2 STAGE 7/7
 
     file = luigi.Parameter()
-    destination = luigi.Parameter()
     config = luigi.Parameter()
 
     def requires(self):
-        return ArchiveFile(file=self.file, destination=self.destination, config=self.config)
+        return ArchiveFile(file=self.file, config=self.config)
 
     def run(self):
         # Make a script that fills this table
@@ -152,11 +150,10 @@ class Start(luigi.Task):
     # WORKFLOW STARTER
 
     file = luigi.Parameter()
-    destination = luigi.Parameter()
     config = luigi.Parameter()
 
     def requires(self):
-        return StoreFileLocationToDB(file=self.file, destination=self.destination, config=self.config)
+        return StoreFileLocationToDB(file=self.file, config=self.config)
 
     def run(self):
         # Make a script that fetches filename from db table of
