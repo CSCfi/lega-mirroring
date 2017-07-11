@@ -10,9 +10,10 @@ logging.basicConfig(filename='copy_log.log',
                     level=logging.INFO)
 
 
-def copy(file, dest):
-    """ Copies file 'file' to destination directory 'dest' """
-    shutil.copy2(file, dest)
+def move(file, dest):
+    """ Moves file 'file' to destination directory 'dest'
+    Operation is atomic within the same disk partition """
+    shutil.move(file, dest)
     log_event(file, dest)
     return
 
