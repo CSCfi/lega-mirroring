@@ -6,8 +6,8 @@ The scripts in this repository will be run in a [luigi](https://github.com/spoti
 ## Scripts
 ##### cf_dir.py
 ```cf_dir.py``` can be used to track file transmission. The name cf_dir stands for *Check Files in DIRectory*.
-This script can be run from command line by typing ```cf-dir <directory> <path/config.ini>```. ```cf-dir``` recursively checks all files
-in the current directory of a certain filetype and keeps track of them with a MySQL database table. A configuration file must be given.
+This script can be run from command line by typing ```cf-dir <path/config.ini>```. ```cf-dir``` recursively checks all files
+in the set directory (config.ini) of a certain filetype and keeps track of them with a MySQL database table. A configuration file must be given.
 
 ##### Operating principle
 
@@ -79,7 +79,6 @@ Clone a copy of this repository using ```git clone https://github.com/CSCfi/lega
 with ```python setup.py install```. The scripts are now installed. Next you must configure the scripts before they are ready to be used.
 You can change certain variable values in config.ini, which will be used by the scripts.
 
-Mainly, you need to define variables in section ```[database]```, as variables have been pre-defined for section ```[func_conf]```.
 ```
 [database]
 host=<localhost or url to your mysql server>
@@ -103,5 +102,9 @@ age_limit=<int value>  #number of seconds until cf-dir starts to accumulate pass
 pass_limit=<int value>  #number of passes until cf-dir attempts to verify file
 age_error_threshold=<int_value>  #number of seconds the file must stay unchanged for an error to be logged
 res_url=<url>  #url to an active res microservice
+[workspaces]
+receiving=<path>  #path to gridftp endpoint (receiving directory, workflow1)
+processing=<path>  #path to processing directory (workflow2)
+end_storage=<path>  #path to final file archive
 ```
 Example: values are already set in ```lega_mirroring/scripts/config.ini```
