@@ -17,7 +17,7 @@ def get_conf(path_to_config):
     and returns the configuration variables as a class object """
     config = ConfigParser()
     config.read(path_to_config)
-    conf = {'end_storage': config.getint('workspaces', 'end_storage')}
+    conf = {'end_storage': config.get('workspaces', 'end_storage')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
