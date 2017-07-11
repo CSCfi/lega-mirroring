@@ -4,7 +4,7 @@ import argparse
 import sys
 import logging
 
-logging.basicConfig(filename='copy_log.log',
+logging.basicConfig(filename='move_log.log',
                     format='%(asctime)s %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
                     level=logging.INFO)
@@ -19,8 +19,8 @@ def move(file, dest):
 
 
 def log_event(file, dest):
-    """ This function logs copying events """
-    logging.info(file + ' copied to ' + dest)
+    """ This function logs moving events """
+    logging.info(file + ' moved to ' + dest)
     return
 
 
@@ -32,7 +32,7 @@ def log_event(file, dest):
 def main(arguments=None):
     """ This function runs the script with given arguments (file and dest) """
     args = parse_arguments(arguments)
-    copy(args.file, args.dest)
+    move(args.file, args.dest)
     return
 
 
