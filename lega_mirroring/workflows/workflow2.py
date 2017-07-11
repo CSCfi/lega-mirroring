@@ -1,10 +1,10 @@
 import luigi
 import lega_mirroring.scripts.md5_checksum
 import lega_mirroring.scripts.res
-#import lega_mirroring.scripts.encrypt_request #stage 4
 import lega_mirroring.scripts.create_md5
 import lega_mirroring.scripts.copy_file
-#import lega_mirroring.scripts.db_loc #stage 7
+#import lega_mirroring.scripts.storeloc #stage 7, script not yet created
+#import lega_mirroring.scripts.start #script not yet created
 
 class VerifyIntegrityOfTransferredFile(luigi.Task):
     # WORKFLOW 2 STAGE 1/7
@@ -126,20 +126,44 @@ class ArchiveFile(luigi.Task):
     def output(self):
         return luigi.LocalTarget('output/6.txt')
 
-
-''' to do
-
-
+'''
 class StoreFileLocationToDB(luigi.Task):
     # WORKFLOW 2 STAGE 7/7
 
-    def requires():
-        return ArchiveFile()
+    file = luigi.Parameter()
+    destination = luigi.Parameter()
+    config = luigi.Parameter()
 
-    def run():
-        # --store_location.py--
+    def requires(self):
+        return ArchiveFile(file=self.file, destination=self.destination, config=self.config)
+
+    def run(self):
+        # Make a script that fills this table
+        # https://github.com/elixir-europe/ega-data-api-v3-downloader/blob/master/src/main/resources/File.sql
+        lega_mirroring.scripts.storeloc.main('...')
+        with self.output().open('w') as fd:
+            fd.write(str(self.file))
         return
 
-    def output():
+    def output(self):
+        return luigi.LocalTarget('output/7.txt')
+
+class Start(luigi.Task):
+    # WORKFLOW STARTER
+
+    file = luigi.Parameter()
+    destination = luigi.Parameter()
+    config = luigi.Parameter()
+
+    def requires(self):
+        return StoreFileLocationToDB(file=self.file, destination=self.destination, config=self.config)
+
+    def run(self):
+        # Make a script that fetches filename from db table of
+        # transferred files, and input them to this workflow
+        lega_mirroring.scripts.start.main('...')
         return
+
+    def output(self):
+        return luigi.LocalTarget('output/start.txt')
 '''
