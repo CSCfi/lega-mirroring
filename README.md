@@ -19,11 +19,11 @@ NOTES:
 * cf-dir operations are logged to file cf_log.log in the working directory
 * default config.ini can be found from lega_mirroring/scripts/
 - - - -
-##### copy_file.py
-```copy_file.py``` copies a file to a directory. This script can be run from command line by typing ```copy-file <path/file> <destination_directory>```.  ```copy-file``` also copies metadata.
+##### move.py
+```move.py``` moves a file to a directory. This script can be run from command line by typing ```move <path/file> <destination_directory>```.  ```move``` is an atomic operation if destination directory is within the same disk partition as file.
 
 NOTES:
-* copy-file operations are logged to file copy_log.log in the working directory
+* move operations are logged to file move_log.log in the working directory
 - - - -
 ##### res.py
 `res.py` is a multifunctional script utilizing ELIXIR's RES microservice. It can be used to either encrypt or decrypt a given file.
