@@ -4,12 +4,12 @@ import os
 import time
 import datetime
 import calendar
-#import hashlib
 import sys
 import argparse
 import logging
 from configparser import ConfigParser
 from collections import namedtuple
+import lega_mirroring.scripts.move
 
 # Log events to file
 logging.basicConfig(filename='cf_log.log',
@@ -29,7 +29,9 @@ def get_conf(path_to_config):
             'db': config.get('database', 'db'),
             'chunk': config.getint('func_conf', 'chunk_size'),
             'age_limit': config.getint('func_conf', 'age_limit'),
-            'pass_limit': config.getint('func_conf', 'pass_limit')}
+            'pass_limit': config.getint('func_conf', 'pass_limit'),
+            'path_receiving': config.get('workspaces', 'receiving'),
+            'path_processing': config.get('workspaces', 'processing')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
@@ -149,10 +151,10 @@ def main(arguments=None):
     """ This function runs the script when executed and given
     a directory as parameter """
     args = parse_arguments(arguments)
-    path = args.path_to_dir
     conf = args.path_to_config
     # Get configuration values from external file
     config = get_conf(conf)
+    path = config.path_receiving
     # Establish database connection
     db = db_init(config.host,
                   config.user,
@@ -177,6 +179,9 @@ def main(arguments=None):
                             # Mark a pass on db table 0..5
                             db_increment_passes(file, db)
                     log_event(file, db)
+                else:
+                    # move file from receiving(wf1) to processing(wf2)
+                    lega_mirroring.scripts.move.main([file, config.path_processing])
             else:  # New file
                 db_insert_new_file(file, db)
                 log_event(file, db)
@@ -189,8 +194,6 @@ def parse_arguments(arguments):
     parser = argparse.ArgumentParser(description='Check files\' age and size'
                                      ' in target directory and track them using'
                                      ' a MySQL database.')
-    parser.add_argument('path_to_dir',
-                        help='target directory to be checked')
     parser.add_argument('path_to_config',
                         help='location of configuration file')
     return parser.parse_args(arguments)
