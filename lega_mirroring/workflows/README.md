@@ -12,12 +12,14 @@ Workflow 1 can be run from command line by typing:
 
 `luigi --module TransferTracking CheckFilesInDirectory --config ..\scripts\config.ini`
 
+To do: Parallelization script
+
 ## Workflow 2: TransferProcessing
 Workflow 2 is used to run all the other steps as described in [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/workflow.png).
 
 Workflow 2 can be run from command line by typing:
 
-`luigi --module TransferProcessing ArchiveFile --file C:\..\file.txt --config ..\scripts\config.ini`
+`luigi --module TransferProcessing ArchiveFile --file ..\file.txt --config ..\scripts\config.ini`
 
 The given file is carried out through the following processes: 
 * (1) after-transfer md5 checksum, 
