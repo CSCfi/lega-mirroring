@@ -4,20 +4,20 @@ server by typing `luigid` in command prompt window. You can then view the workfl
 
 [Here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/luigi_example.png) is an example of what luigi visualizer looks like when running workflow2.py. The pipeline is read from bottom to top.
 
-## Workflow 1: Tracking file transfer process
+## Workflow 1: TransferTracking
 Workflow 1 is used to periodically run the `cf-dir` script. See [README](https://github.com/CSCfi/lega-mirroring/blob/master/README.md)
 for operating principles.
 
 Workflow 1 can be run from command line by typing:
 
-`luigi --module workflow1 CheckFilesInDirectory --config C:\..\config.ini`
+`luigi --module TransferTracking CheckFilesInDirectory --config ..\scripts\config.ini`
 
-## Workflow 2: Everything else
+## Workflow 2: TransferProcessing
 Workflow 2 is used to run all the other steps as described in [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/workflow.png).
 
-Workflow 2 in it's current state can be run from command line by typing:
+Workflow 2 can be run from command line by typing:
 
-`luigi --module workflow2 ArchiveFile --file C:\..\file.txt --config C:\..\config.ini`
+`luigi --module TransferProcessing ArchiveFile --file C:\..\file.txt --config ..\scripts\config.ini`
 
 The given file is carried out through the following processes: 
 * (1) after-transfer md5 checksum, 
