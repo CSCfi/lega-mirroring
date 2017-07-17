@@ -1,5 +1,6 @@
-#!/usr/bin/env python
-import mysql.connector
+#!/usr/bin/env python3.4
+#import mysql.connector
+import MySQLdb
 import os
 import time
 import datetime
@@ -38,11 +39,10 @@ def get_conf(path_to_config):
 
 def db_init(hostname, username, password, database):
     """ This function initializes database connection and returns cursor """
-    db = mysql.connector.connect(host=hostname,
-                                 user=username,
-                                 passwd=password,
-                                 db=database,
-                                 buffered=True)
+    db = MySQLdb.connect(host=hostname,
+                         user=username,
+                         passwd=password,
+                         db=database)
     return db
 
 
@@ -142,6 +142,29 @@ def log_event(path, db):
     return
 
 
+def par(directory, branches, branch):
+    """
+    This function reads a directory and generates a list
+    of files to be checked by a single parallel process
+    
+    :directory:  target directory to be sorted
+    :branches:  number of branches to be run
+    :branch:  id of branch
+    """
+
+    complete_set = os.listdir(directory)
+    selected_set = []  # to be appended
+
+    i = 0
+    while i <= len(complete_set):
+        index = branch+i*branches
+        if index <= len(complete_set):
+            selected_set.append(complete_set[index-1])
+        i += 1
+    
+    return selected_set
+
+
 '''*************************************************************'''
 #                         cmd-executable                          #
 '''*************************************************************'''
@@ -150,8 +173,11 @@ def log_event(path, db):
 def main(arguments=None):
     """ This function runs the script when executed and given
     a directory as parameter """
+    start_time = time.time()
     args = parse_arguments(arguments)
-    conf = args.path_to_config
+    branches = int(args.branches)
+    branch = int(args.branch)
+    conf = args.config
     # Get configuration values from external file
     config = get_conf(conf)
     path = config.path_receiving
@@ -161,7 +187,9 @@ def main(arguments=None):
                   config.passwd,
                   config.db)
     # Begin file checking process
-    for file in os.listdir(path):
+    selected_set = par(path, branches, branch)
+    for file in selected_set:
+        rawfile = file
         file = os.path.join(path, file)
         if file.endswith('.txt' or '.cip'):  #.txt for testing
             if db_get_file_details(file, db):  # Old file
@@ -181,11 +209,14 @@ def main(arguments=None):
                     log_event(file, db)
                 else:
                     # move file from receiving(wf1) to processing(wf2)
-                    shutil.move(file, config.path_processing)
+                    try:
+                        os.rename(file, os.path.join(config.path_processing, rawfile))
+                    except:
+                        pass
             else:  # New file
                 db_insert_new_file(file, db)
                 log_event(file, db)
-    return
+    return ('Runtime: ' + str(time.time()-start_time) + ' seconds')
 
 
 def parse_arguments(arguments):
@@ -194,7 +225,11 @@ def parse_arguments(arguments):
     parser = argparse.ArgumentParser(description='Check files\' age and size'
                                      ' in target directory and track them using'
                                      ' a MySQL database.')
-    parser.add_argument('path_to_config',
+    parser.add_argument('branches',
+                        help='number of parallelizations')
+    parser.add_argument('branch',
+                        help='unique id of machine')
+    parser.add_argument('config',
                         help='location of configuration file')
     return parser.parse_args(arguments)
 
