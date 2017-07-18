@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import os
+import ntpath
 import shutil
 import argparse
 import sys
@@ -23,9 +25,12 @@ def get_conf(path_to_config):
 
 
 def move(file, dest):
-    """ Moves file 'file' to destination directory 'dest'
-    Operation is atomic within the same disk partition """
-    shutil.move(file, dest)
+    """ Moves file 'file' to destination directory 'dest' """
+    #shutil.move(file, dest)
+    try:
+        os.rename(file, os.path.join(dest, ntpath.basename(file)))
+    except:
+        pass
     log_event(file, dest)
     return
 
@@ -46,6 +51,7 @@ def main(arguments=None):
     args = parse_arguments(arguments)
     conf = args.path_to_config
     config = get_conf(conf)
+    # move file from processing(wf2) to archive
     move(args.file, config.end_storage)
     return
 
