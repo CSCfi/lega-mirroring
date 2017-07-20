@@ -35,7 +35,7 @@ class DecryptTransferredFile(luigi.Task):
 
     def run(self):
         # Add / in front of filename for linux
-        lega_mirroring.scripts.res.main(['decrypt', ('/' + self.file), self.config])
+        lega_mirroring.scripts.res.main(['decrypt', self.file, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
         return
@@ -55,7 +55,7 @@ class VerifyIntegrityOfDecryptedFile(luigi.Task):
 
     def run(self):
         # remove .cip extension from filename
-        filename_decr = self.file.replace('.cip', '.txt')
+        filename_decr = self.file.replace('.cip', '')
         md5 = lega_mirroring.scripts.md5_checksum.main([filename_decr, self.config])
         if not md5:
             raise Exception('md5 mismatch')
@@ -77,8 +77,8 @@ class EncryptVerifiedFile(luigi.Task):
         return VerifyIntegrityOfDecryptedFile(file=self.file, config=self.config)
 
     def run(self):
-        # Add / in front of filename for linux
-        lega_mirroring.scripts.res.main(['encrypt', ('/' + self.file), self.config])
+        filename_decr = self.file.replace('.cip', '')
+        lega_mirroring.scripts.res.main(['encrypt', filename_decr, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
         return
@@ -97,7 +97,7 @@ class CreateHashForEncryptedFile(luigi.Task):
         return EncryptVerifiedFile(file=self.file, config=self.config)
 
     def run(self):
-        filename_encr = self.file.replace('.cip', '.txt')
+        filename_encr = self.file.replace('.cip', '.cip.csc')
         lega_mirroring.scripts.create_md5.main([filename_encr, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
@@ -145,24 +145,4 @@ class StoreFileLocationToDB(luigi.Task):
 
     def output(self):
         return luigi.LocalTarget('output/7.txt')
-
-class Start(luigi.Task):
-    # WORKFLOW STARTER
-
-    file = luigi.Parameter()
-    config = luigi.Parameter()
-
-    def requires(self):
-        return StoreFileLocationToDB(file=self.file, config=self.config)
-
-    def run(self):
-        # Make a script that fetches filename from db table of
-        # transferred files, and input them to this workflow
-        lega_mirroring.scripts.start.main('...')
-        with self.output().open('w') as fd:
-            fd.write(str(self.file))
-        return
-
-    def output(self):
-        return luigi.LocalTarget('output/start.txt')
 '''
