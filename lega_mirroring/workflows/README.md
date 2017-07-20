@@ -8,23 +8,23 @@ server by typing `luigid` in command prompt window. You can then view the workfl
 Workflow 1 is used to periodically run the `cf-dir` script. See [README](https://github.com/CSCfi/lega-mirroring/blob/master/README.md)
 for operating principles.
 
-Workflow 1 can be run from command line by typing:
+Workflow 1 can be run from command line (*cwd: lega-mirroring*) by typing:
 
-`luigi --module TransferTracking CheckFilesInDirectory --config ..\scripts\config.ini`
+`luigi --module lega_mirroring.workflows.TransferTracking CheckFilesInDirectory --config config.ini`
 
 For example:
 
-`luigi --module TransferTracking CheckFilesInDirector --branches 4 --branch 1 --config ..\scripts\config.ini` would run the process, checking
-25% of the files in incoming/gridftp-endpoint/. Branches tell the fraction and branch is the starting index, for example, this setup
-would check files 1,5,9,13,17....branch+4\*n. This syntax is used to set up parallel processes. To check all files on one process, use
-values branches 1 branch 1.
+`luigi --module lega_mirroring.workflows.TransferTracking CheckFilesInDirector --branches 4 --branch 1 --config config.ini` would run the process, checking
+25% of the files in data/incoming/gridftp-endpoint/. Branches tell the fraction and branch is the starting index, for example, this setup
+would check files 1,5,9,13,17....branch+4\*n. This syntax is used to set up parallel processes. To check all files in one process, use
+values `--branches 1 --branch 1`.
 
 ## Workflow 2: TransferProcessing
 Workflow 2 is used to run all the other steps as described in [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/workflow.png).
 
-Workflow 2 can be run from command line by typing:
+Workflow 2 can be run from command line (*cwd: lega-mirroring*) by typing:
 
-`luigi --module TransferProcessing ArchiveFile --file ..\filename.cip --config ..\scripts\config.ini`
+`luigi --module lega_mirroring.workflows.TransferProcessing ArchiveFile --file /data/incoming/processing/examplegenomefile.bam.cip --config config.ini`
 
 
 
