@@ -1,7 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.4
 import os
 import ntpath
-import shutil
 import argparse
 import sys
 import logging
@@ -26,7 +25,6 @@ def get_conf(path_to_config):
 
 def move(file, dest):
     """ Moves file 'file' to destination directory 'dest' """
-    #shutil.move(file, dest)
     try:
         os.rename(file, os.path.join(dest, ntpath.basename(file)))
     except:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.4
 import requests
 import sys
 import argparse
@@ -51,21 +51,23 @@ def encrypt(host_url, file_path):
     return r
 
 
-def write_to_file(crypt, feed, chnk):
+def write_to_file(crypt, feed, chnk, path):
     """ This function handles a stream of data and writes
     it to file """
     if crypt == 'decrypt':
-        with open('decrypted_file.txt', 'wb+') as f:
+        newpath = path.replace('.cip', '')
+        with open(newpath, 'wb+') as f:
             for chunk in feed.iter_content(chunk_size=chnk):
                 if chunk:
                     f.write(chunk)
     elif crypt == 'encrypt':
-        with open('encrypted_file.cip', 'wb+') as f:
+        newpath = path.replace('.bam', '.bam.cip.csc')
+        with open(newpath, 'wb+') as f:
             for chunk in feed.iter_content(chunk_size=chnk):
                 if chunk:
                     f.write(chunk)
     else:
-        raise Exception('invalid var(crypt) for write_to_file')
+        raise Exception('invalid var(crypt) for write_to_file()')
     return
 
 
@@ -94,9 +96,9 @@ def main(arguments=None):
     conf = args.config
     config = get_conf(conf)
     if method == 'decrypt':
-        write_to_file(method, decrypt(config.res_url, path), config.chunk_size)
+        write_to_file(method, decrypt(config.res_url, path), config.chunk_size, path)
     elif method == 'encrypt':
-        write_to_file(method, encrypt(config.res_url, path), config.chunk_size)
+        write_to_file(method, encrypt(config.res_url, path), config.chunk_size, path)
     else:
         raise Exception('invalid method, must be \'encrypt\' or \'decrypt\'')
     return

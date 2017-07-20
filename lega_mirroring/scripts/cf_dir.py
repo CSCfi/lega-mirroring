@@ -40,9 +40,9 @@ def get_conf(path_to_config):
 def db_init(hostname, username, password, database):
     """ This function initializes database connection and returns cursor """
     db = MySQLdb.connect(host=hostname,
-                         user=username,
-                         passwd=password,
-                         db=database)
+                                 user=username,
+                                 passwd=password,
+                                 db=database)
     return db
 
 
