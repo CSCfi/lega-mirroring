@@ -23,10 +23,11 @@ def get_conf(path_to_config):
     return conf_named
 
 
-def move(file, dest):
-    """ Moves file 'file' to destination directory 'dest' """
+def move(file, md5, dest):
+    """ Moves files 'file' and 'md5' to destination directory 'dest' """
     try:
-        os.rename(file, os.path.join(dest, ntpath.basename(file)))
+        os.rename(file, os.path.join('/' + dest, ntpath.basename(file)))
+        os.rename(md5, os.path.join('/' + dest, ntpath.basename(md5)))
     except:
         pass
     log_event(file, dest)
@@ -50,7 +51,7 @@ def main(arguments=None):
     conf = args.path_to_config
     config = get_conf(conf)
     # move file from processing(wf2) to archive
-    move(args.file, config.end_storage)
+    move(args.file, args.md5, config.end_storage)
     return
 
 
@@ -62,6 +63,8 @@ def parse_arguments(arguments):
                                      ' config.ini')
     parser.add_argument('file',
                         help='path to file to be moved')
+    parser.add_argument('md5',
+                        help='path to md5 to be moved')
     parser.add_argument('path_to_config',
                         help='path to configuration file.')
     return parser.parse_args(arguments)

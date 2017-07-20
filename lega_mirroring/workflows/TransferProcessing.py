@@ -4,7 +4,6 @@ import lega_mirroring.scripts.res
 import lega_mirroring.scripts.create_md5
 import lega_mirroring.scripts.move
 #import lega_mirroring.scripts.storeloc #stage 7, script not yet created
-#import lega_mirroring.scripts.start #script not yet created
 
 class VerifyIntegrityOfTransferredFile(luigi.Task):
     # WORKFLOW 2 STAGE 1/7
@@ -117,9 +116,11 @@ class ArchiveFile(luigi.Task):
         return CreateHashForEncryptedFile(file=self.file, config=self.config)
 
     def run(self):
-        lega_mirroring.scripts.move.main([self.file, self.config])
+        cscfile = self.file + '.csc'
+        cscmd5 = cscfile + '.md5'
+        lega_mirroring.scripts.move.main([cscfile, cscmd5, self.config])
         with self.output().open('w') as fd:
-            fd.write(str(self.file))
+            fd.write(str(cscfile + '\n' + cscmd5))
         return
 
     def output(self):
