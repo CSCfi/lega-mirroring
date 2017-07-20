@@ -69,14 +69,12 @@ NOTES:
 
 ```db_script.txt``` contains the creation script of the database table used by ```cf_dir.py``` to track file transmission and verification.
 
-##### Dependencies
-* ```decrypt_request.py``` contains import of python [requests](https://github.com/requests/requests) library
-* `workflow1.py` and `workflow2.py` contains import of python [luigi](https://github.com/spotify/luigi) library. (the scripts can also
-be run manually without the use of luigi workflow)
+##### Dependencies (required python libraries)
+* `MySQLdb, os, time, datetime, calendar, sys, argparse, logging, configparser, collections, hashlib, ntpath, requests, luigi`
 
 ## How to install
 Clone a copy of this repository using ```git clone https://github.com/CSCfi/lega-mirroring```. Then run the setup in command prompt
-with ```python setup.py install```. The scripts are now installed. Next you must configure the scripts before they are ready to be used.
+with ```python setup.py install``` (use python 3.4). The scripts are now installed. Next you must configure the scripts before they are ready to be used.
 You can change certain variable values in config.ini, which will be used by the scripts.
 
 ```
