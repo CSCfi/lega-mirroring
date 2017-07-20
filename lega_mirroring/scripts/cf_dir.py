@@ -1,5 +1,4 @@
 #!/usr/bin/env python3.4
-#import mysql.connector
 import MySQLdb
 import os
 import time
@@ -8,7 +7,6 @@ import calendar
 import sys
 import argparse
 import logging
-import shutil
 from configparser import ConfigParser
 from collections import namedtuple
 
