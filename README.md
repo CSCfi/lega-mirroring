@@ -3,6 +3,12 @@ This git repository contains scripts for Local EGA data mirroring project. Local
 
 The scripts in this repository will be run in a [luigi](https://github.com/spotify/luigi) workflow according to [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/workflow.png). Click [here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/README.md) to see how.
 
+##### Local EGA Demo Video
+
+![Local EGA Demo](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/local_ega_demo.gif)
+
+Click [here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/local_ega_demo.gif) to restart the video in a new window.
+
 ## Scripts
 ##### cf_dir.py
 ```cf_dir.py``` can be used to track file transmission. The name cf_dir stands for *Check Files in DIRectory*.
