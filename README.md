@@ -103,4 +103,4 @@ receiving=<path>  #path to gridftp endpoint (receiving directory, workflow1)
 processing=<path>  #path to processing directory (workflow2)
 end_storage=<path>  #path to final file archive
 ```
-Example: values are already set in ```lega_mirroring/scripts/config.ini```
+Example: values are already set in [config.ini](https://github.com/CSCfi/lega-mirroring/blob/master/config.ini)
