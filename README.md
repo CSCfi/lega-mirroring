@@ -63,14 +63,6 @@ by typing ```create-md5 <path/file> <path/config.ini>```.
 NOTES:
 * create-md5 operations are logged to file create_md5_log.log in the working directory
 - - - -
-##### find_errors.py
-```find_errors.py``` can be run to query the database tracking table for files' ```passes``` and ```verified``` statuses. If
-a file has remained unchanged for a considerable amount of time and hasn't been verified, an error will be logged to file. This
-script can be run from command line by typing ```find-errors <path/config.ini>```.
-
-NOTES:
-* file-errors operations are logged to file errors.log in the working directory
-- - - -
 ## Other
 
 ```db_script.txt``` contains the creation script of the database table used by ```cf_dir.py``` to track file transmission and verification.
