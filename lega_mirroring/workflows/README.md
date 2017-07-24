@@ -1,6 +1,9 @@
 # Luigi Workflow
 This module can be run using [luigi](https://github.com/spotify/luigi) workflow. Start the workflows by first starting a local luigi
-server by typing `luigid` in command prompt window. You can then view the workflows at your [local visualiser](http://localhost:8082).
+server by typing `luigid` in command prompt window. You can then view the workflows at your [local visualiser](http://localhost:8082) (example below).
+
+
+![Luigi Workflow Example](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/luigi_example.png)
 
 [Here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/luigi_example.png) is an example of what luigi visualizer looks like when running TransferProcessing.py. The pipeline is read from bottom to top.
 
