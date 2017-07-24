@@ -1,0 +1,5 @@
+MySQLdb
+configparser
+ntpath
+requests
+luigi
