@@ -38,9 +38,9 @@ def get_conf(path_to_config):
 def db_init(hostname, username, password, database):
     """ This function initializes database connection and returns cursor """
     db = MySQLdb.connect(host=hostname,
-                                 user=username,
-                                 passwd=password,
-                                 db=database)
+                         user=username,
+                         passwd=password,
+                         db=database)
     return db
 
 
@@ -78,8 +78,7 @@ def db_get_file_details(path, db):
                       'name': path,
                       'size': int(row[2]),
                       'age': float(row[3]),
-                      'passes': row[4],
-                      'verified': row[5]}
+                      'passes': row[4]}
     return status
 
 
@@ -123,7 +122,7 @@ def db_insert_new_file(path, db):
     params = [path, file_size, file_age]
     cur = db.cursor()
     cur.execute('INSERT INTO files '
-                'VALUES (NULL, %s, %s, %s, 0, 0);',
+                'VALUES (NULL, %s, %s, %s, 0);',
                 params)
     db.commit()
     return
@@ -181,9 +180,9 @@ def main(arguments=None):
     path = config.path_receiving
     # Establish database connection
     db = db_init(config.host,
-                  config.user,
-                  config.passwd,
-                  config.db)
+                 config.user,
+                 config.passwd,
+                 config.db)
     # Begin file checking process
     selected_set = par(path, branches, branch)
     for file in selected_set:
