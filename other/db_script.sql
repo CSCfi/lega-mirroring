@@ -4,6 +4,5 @@ CREATE TABLE files (
 	size varchar(32) NOT NULL,
 	age varchar(32) NOT NULL,
 	passes int NOT NULL,
-	verified tinyint(1) NOT NULL,
 	PRIMARY KEY (id)
 );
