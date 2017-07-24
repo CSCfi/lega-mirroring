@@ -93,7 +93,6 @@ Other config.ini variables:
 chunk_size=<int value>  #chunk size in bytes used in hashing
 age_limit=<int value>  #number of seconds until cf-dir starts to accumulate passes
 pass_limit=<int value>  #number of passes until cf-dir attempts to verify file
-age_error_threshold=<int_value>  #number of seconds the file must stay unchanged for an error to be logged
 res_url=<url>  #url to an active res microservice
 [workspaces]
 receiving=<path>  #path to gridftp endpoint (receiving directory, workflow1)
