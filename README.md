@@ -65,14 +65,11 @@ NOTES:
 - - - -
 ## Other
 
-```db_script.txt``` contains the creation script of the database table used by ```cf_dir.py``` to track file transmission and verification.
-
-##### Dependencies (required python libraries)
-* `MySQLdb, os, time, datetime, calendar, sys, argparse, logging, configparser, collections, hashlib, ntpath, requests, luigi`
+```db_script.txt``` contains the creation script of the database table used by ```cf_dir.py``` to track file transmission.
 
 ## How to install
 Clone a copy of this repository using ```git clone https://github.com/CSCfi/lega-mirroring```. Then run the setup in command prompt
-with ```python setup.py install``` (use python 3.4). The scripts are now installed. Next you must configure the scripts before they are ready to be used.
+with ```python setup.py install``` (use python 3.4). The scripts are now installed. Install dependencies by typing `sudo pip3.4 install -r requirements.txt` to install required python libraries. Next you must configure the scripts before they are ready to be used.
 You can change certain variable values in config.ini, which will be used by the scripts.
 
 ```
