@@ -99,3 +99,9 @@ processing=<path>  #path to processing directory (workflow2)
 end_storage=<path>  #path to final file archive
 ```
 Example: values are already set in [config.ini](https://github.com/CSCfi/lega-mirroring/blob/master/config.ini)
+
+
+# Local EGA Process Overview
+![Picture](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualized.png)
+
+Click [here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualized.png) to open full picture.
