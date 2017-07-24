@@ -8,7 +8,7 @@ server by typing `luigid` in command prompt window. You can then view the workfl
 [Here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/luigi_example.png) is an example of what luigi visualizer looks like when running TransferProcessing.py. The pipeline is read from bottom to top.
 
 ## Workflow 1: TransferTracking
-Workflow 1 is used to periodically run the `cf-dir` script. See [README](https://github.com/CSCfi/lega-mirroring/blob/master/README.md)
+Workflow 1 is used to periodically run the `monitor` script. See [README](https://github.com/CSCfi/lega-mirroring/blob/master/README.md)
 for operating principles.
 
 Workflow 1 can be run from command line (*cwd: lega-mirroring*) by typing:
