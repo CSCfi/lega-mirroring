@@ -10,11 +10,11 @@ for operating principles.
 
 Workflow 1 can be run from command line (*cwd: lega-mirroring*) by typing:
 
-`luigi --module lega_mirroring.workflows.TransferTracking CheckFilesInDirectory --config config.ini`
+`luigi --module lega_mirroring.workflows.TransferTracking CheckFilesInDirectory --branches <int> --branch <int> --config config.ini`
 
 For example:
 
-`luigi --module lega_mirroring.workflows.TransferTracking CheckFilesInDirector --branches 4 --branch 1 --config config.ini` would run the process, checking
+`luigi --module lega_mirroring.workflows.TransferTracking CheckFilesInDirectory --branches 4 --branch 1 --config config.ini` would run the process, checking
 25% of the files in data/incoming/gridftp-endpoint/. Branches tell the fraction and branch is the starting index, for example, this setup
 would check files 1,5,9,13,17....branch+4\*n. This syntax is used to set up parallel processes. To check all files in one process, use
 values `--branches 1 --branch 1`.
