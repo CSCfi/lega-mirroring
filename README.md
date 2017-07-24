@@ -104,4 +104,4 @@ Example: values are already set in [config.ini](https://github.com/CSCfi/lega-mi
 # Local EGA Process Overview
 ![Picture](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualized.png)
 
-Click [here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualized.png) to open full picture.
+Click [here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualized.png?raw=true) to open full picture.
