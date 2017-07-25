@@ -6,9 +6,6 @@ import logging
 from configparser import ConfigParser
 from collections import namedtuple
 
-# Use these parameters for testing
-# file_path = '/data/NA12878.mapped.ILLUMINA.bwa.CEU.high_coverage_pcr_free.20130906.bam.cip'
-# host_url = 'http://86.50.169.120:9090/file/'
 logging.basicConfig(filename='res_log.log',
                     format='%(asctime)s %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
