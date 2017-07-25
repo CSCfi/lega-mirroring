@@ -104,7 +104,7 @@ def main(arguments=None):
 def parse_arguments(arguments):
     """ This function returns the parsed arguments host and path
     host : url to RES microservice
-    path : path to crypted file (to be decrypted) """
+    path : path to file to be worked on """
     parser = argparse.ArgumentParser(description='Utilizes RES Microservice'
                                      ' to decrypt or encrypt files.')
     parser.add_argument('method',
