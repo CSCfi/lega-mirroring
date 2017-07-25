@@ -1,7 +1,6 @@
 import luigi
-import lega_mirroring.scripts.md5_checksum
 import lega_mirroring.scripts.res
-import lega_mirroring.scripts.create_md5
+import lega_mirroring.scripts.md5
 import lega_mirroring.scripts.move
 #import lega_mirroring.scripts.storeloc #stage 7, script not yet created
 
@@ -12,7 +11,7 @@ class VerifyIntegrityOfTransferredFile(luigi.Task):
     config = luigi.Parameter()
 
     def run(self):
-        md5 = lega_mirroring.scripts.md5_checksum.main([self.file, self.config])
+        md5 = lega_mirroring.scripts.md5.main(['check', self.file, self.config])
         if not md5:
             raise Exception('md5 mismatch')
         with self.output().open('w') as fd:
@@ -55,7 +54,7 @@ class VerifyIntegrityOfDecryptedFile(luigi.Task):
     def run(self):
         # remove .cip extension from filename
         filename_decr = self.file.replace('.cip', '')
-        md5 = lega_mirroring.scripts.md5_checksum.main([filename_decr, self.config])
+        md5 = lega_mirroring.scripts.md5.main(['check', filename_decr, self.config])
         if not md5:
             raise Exception('md5 mismatch')
         with self.output().open('w') as fd:
@@ -97,7 +96,7 @@ class CreateHashForEncryptedFile(luigi.Task):
 
     def run(self):
         filename_encr = self.file.replace('.cip', '.cip.csc')
-        lega_mirroring.scripts.create_md5.main([filename_encr, self.config])
+        lega_mirroring.scripts.md5.main(['hash', filename_encr, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
         return
