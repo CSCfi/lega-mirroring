@@ -47,28 +47,28 @@ NOTES:
 * Read more about RES microservice [here](https://github.com/elixir-europe/ega-data-api-v3-res_mvc)
 * `[func_conf] res_url=<url>` in `config.ini` must be configured with the url of an active RES microservice.
 - - - -
-##### md5_checksum.py
-```md5_checksum.py``` verifies file integrity using md5 checksums. This function is used to verify the integrity of decrypted
-files and should not be confused with the built-in md5-function inside cf_dir.py. This script can be run from command line by
-typing ```md5-checksum <path/file> <path/config.ini>```. The script will calculate an md5 checksum for given file and attempt to read the hash inside ```file.type.md5``` and compare these values.
+##### md5.py
+`md5.py` is a multifunctional script capable of generating md5 hashes and writing them to file as well as performing checksum operations. This function is used to verify the integrity of transferred and decrypted files as well as generating md5 hashes for
+encrypted files. This script can be run from command line by typing `md5 <method> <path/file> <path/config.ini>`.
+
+Example hash generation:
+
+`md5 hash file.txt config.ini`. Generates `file.txt.md5` in the working directory.
+
+Example checksumming:
+
+`md5 check file.txt config.ini`. Reads `file.txt.md5` in the working directory to determine if hashed value is equal to read value.
 
 NOTES:
-* md5-checksum operations are logged to file md5checksum_log.log in the working directory
-- - - -
-##### create_md5.py
-```create_md5.py``` generates an md5 hash for a given file and saves it to an .md5 file. This script can be run from command line
-by typing ```create-md5 <path/file> <path/config.ini>```.
-
-NOTES:
-* create-md5 operations are logged to file create_md5_log.log in the working directory
+* md5 operations are logged to file md5_log.log in the working directory
 - - - -
 ## Other
 
-```db_script.txt``` contains the creation script of the database table used by ```cf_dir.py``` to track file transmission.
+```db_script.txt``` contains the creation script of the database table used by ```monitor.py``` to track file transmission.
 
 ## How to install
 Clone a copy of this repository using ```git clone https://github.com/CSCfi/lega-mirroring```. Then run the setup in command prompt
-with ```python setup.py install``` (use python 3.4). The scripts are now installed. Install dependencies by typing `sudo pip3.4 install -r requirements.txt` to install required python libraries. Next you must configure the scripts before they are ready to be used.
+with ```sudo python3 setup.py install``` (use python 3.4). The scripts are now installed. Install dependencies by typing `sudo pip3.4 install -r requirements.txt` to install required python libraries. Next you must configure the scripts before they are ready to be used.
 You can change certain variable values in config.ini, which will be used by the scripts.
 
 ```
