@@ -41,4 +41,17 @@ The given file is carried out through the following processes:
 
 (to do: step (7) save end storage location to tracking table)
 
-To do: Remove --file option (it will be automatic)
+## ProcessMaster: Workflow 2 Automator
+This luigi script is used to start parallel TransferProcessing.py luigi workflows. `TransferProcessing.py` takes a single file as input,
+and as such can only be used manually. `ProcessMaster.py` generates a list of files for `TransferProcessing.py` to work on, and thus
+automates the process.
+
+ProcessMaster can be started from command line (*cwd: lega-mirroring*) by typing:
+
+`luigi --module lega_mirroring.workflows.ProcessMaster Launch --branches <int> --branch <int> --config config.ini`
+
+For example:
+
+`luigi --module lega_mirroring.workflows.ProcessMaster Launch --branches 4 --branch 1 --config config.ini` would run the process,
+allocating 25% of the `processing` directory for machine number `1`. (as in Workflow 1: TransferTracking) To process the whole directory
+on one machine (single process) use values `--branches 1 --branch 1`.
