@@ -6,7 +6,7 @@ import logging
 from configparser import ConfigParser
 from collections import namedtuple
 
-logging.basicConfig(filename='logs/res_log.log',
+logging.basicConfig(filename='res_log.log',
                     format='%(asctime)s %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
                     level=logging.INFO)
