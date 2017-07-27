@@ -32,7 +32,6 @@ class DecryptTransferredFile(luigi.Task):
         return VerifyIntegrityOfTransferredFile(file=self.file, config=self.config)
 
     def run(self):
-        # Add / in front of filename for linux
         lega_mirroring.scripts.res.main(['decrypt', self.file, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
