@@ -14,8 +14,13 @@ logging.basicConfig(filename='md5_log.log',
 
 
 def get_conf(path_to_config):
-    """ This function reads configuration variables from an external file
-    and returns the configuration variables as a class object """
+    """ 
+    This function reads configuration variables from an external file
+    and returns the configuration variables as a class object 
+    
+    :path_to_config: full path to config.ini (or just config.ini if
+                     cwd: lega-mirroring)
+    """
     config = ConfigParser()
     config.read(path_to_config)
     conf = {'chunk_size': config.getint('func_conf', 'chunk_size')}
@@ -24,8 +29,15 @@ def get_conf(path_to_config):
 
 
 def hash_md5_for_file(method, path, chunk_size):
-    """ This function reads a file and returns a
-    generated md5 checksum """
+    """ 
+    This function reads a file and returns a generated md5 checksum 
+    
+    :method: operating method given in main, hash or check
+             hash: md5 is generated and written to .md5 file
+             check: md5 is generated and returned
+    :path: path to file that md5 will be hashed for
+    :chunk_size: chunk size for reading original file
+    """
     hash_md5 = hashlib.md5()
     md5 = False
     if os.path.exists(path):
@@ -42,8 +54,11 @@ def hash_md5_for_file(method, path, chunk_size):
 
 
 def get_md5_from_file(path):
-    """ This function reads a file type file.md5
-    and returns the md5 checksum inside """
+    """ 
+    This function reads a file and returns the md5 checksum inside 
+    
+    :path: path to md5 file
+    """
     path_to_md5 = path + '.md5'
     with open(path_to_md5, 'r') as f:
         md5 = f.read()
@@ -56,7 +71,11 @@ def get_md5_from_file(path):
 
 
 def main(arguments=None):
-    """ This function runs the script with given arguments """
+    """ 
+    This function runs the script
+    
+    :arguments: contains parsed command line parameters
+    """
     args = parse_arguments(arguments) 
     config = get_conf(args.config)
     retval = False
@@ -89,7 +108,15 @@ def main(arguments=None):
 
 
 def parse_arguments(arguments):
-    """ This function returns the parsed argument path """
+    """ 
+    This function parses command line inputs and returns them for main()
+    
+    :method: parameter that determines the operation of the script
+             either hash or check, can not be left empty
+    :path: path to file to be worked on 
+    :config: full path to config.ini (or just config.ini if
+                     cwd: lega-mirroring)
+    """
     parser = argparse.ArgumentParser(description='Generate md5 hash '
                                      'or check md5 sum '
                                      'for given file.')

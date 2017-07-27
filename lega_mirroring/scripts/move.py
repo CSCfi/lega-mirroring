@@ -14,8 +14,13 @@ logging.basicConfig(filename='move_log.log',
 
 
 def get_conf(path_to_config):
-    """ This function reads configuration variables from an external file
-    and returns the configuration variables as a class object """
+    """ 
+    This function reads configuration variables from an external file
+    and returns the configuration variables as a class object 
+    
+    :path_to_config: full path to config.ini (or just config.ini if
+                     cwd: lega-mirroring)
+    """
     config = ConfigParser()
     config.read(path_to_config)
     conf = {'end_storage': config.get('workspaces', 'end_storage')}
@@ -24,7 +29,14 @@ def get_conf(path_to_config):
 
 
 def move(file, md5, dest):
-    """ Moves files 'file' and 'md5' to destination directory 'dest' """
+    """ 
+    This function moves files from current directory to another directory
+    atomically
+    
+    :file: file that will be moved
+    :md5: associated md5-file that will be moved
+    :dest: destination directory
+    """
     try:
         os.rename(file, os.path.join('/' + dest, ntpath.basename(file)))
         os.rename(md5, os.path.join('/' + dest, ntpath.basename(md5)))
@@ -35,7 +47,12 @@ def move(file, md5, dest):
 
 
 def log_event(file, dest):
-    """ This function logs moving events """
+    """ 
+    This function logs moving events 
+    
+    :file: file that was moved
+    :dest: destination directory of file
+    """
     logging.info(file + ' moved to ' + dest)
     return
 
@@ -46,7 +63,11 @@ def log_event(file, dest):
 
 
 def main(arguments=None):
-    """ This function moves given file to end storage location """
+    """ 
+    This function runs the script
+    
+    :arguments: contains parsed command line parameters
+    """
     args = parse_arguments(arguments)
     conf = args.path_to_config
     config = get_conf(conf)
@@ -56,8 +77,12 @@ def main(arguments=None):
 
 
 def parse_arguments(arguments):
-    """ This function returns the parsed arguments
-    file(which is a file) and dest(which is a directory) """
+    """ 
+    This function parses command line inputs and returns them for main()
+    
+    :file: file.bam.cip.csc that will be moved final-archive
+    :md5: file.bam.cip.csc.md5 that will be moved to final-archive
+    """
     parser = argparse.ArgumentParser(description='Move file to'
                                      ' predetermined location set in'
                                      ' config.ini')

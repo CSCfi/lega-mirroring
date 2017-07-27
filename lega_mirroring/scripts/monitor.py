@@ -18,8 +18,13 @@ logging.basicConfig(filename='monitor_log.log',
 
 
 def get_conf(path_to_config):
-    """ This function reads configuration variables from an external file
-    and returns the configuration variables as a class object """
+    """ 
+    This function reads configuration variables from an external file
+    and returns the configuration variables as a class object 
+    
+    :path_to_config: full path to config.ini (or just config.ini if
+                     cwd: lega-mirroring)
+    """
     config = ConfigParser()
     config.read(path_to_config)
     conf = {'host': config.get('database', 'host'),
@@ -36,7 +41,15 @@ def get_conf(path_to_config):
 
 
 def db_init(hostname, username, password, database):
-    """ This function initializes database connection and returns cursor """
+    """ 
+    This function initializes database connection and returns a connection
+    object that will be used as an executale cursor object
+    
+    :hostname: address of mysql server
+    :username: username to log in to mysql server
+    :password: password associated with :username: to log in to mysql server
+    :database: database to be worked on
+    """
     db = MySQLdb.connect(host=hostname,
                          user=username,
                          passwd=password,
@@ -45,26 +58,39 @@ def db_init(hostname, username, password, database):
 
 
 def get_file_size(path):
-    """ This function reads a file and returns
-    it's byte size as numeral string """
+    """ 
+    This function reads a file and returns it's byte size as numeral string 
+    
+    :path: file to be read
+    """
     return os.path.getsize(path)
 
 
 def get_file_age(path):
-    """ This function reads a file and returns it's last
-    modified date as mtime(float) in string form """
+    """ 
+    This function reads a file and returns it's last modified date as
+    mtime(float) in string form
+    
+    :path: file to be read
+    """
     return os.path.getmtime(path)
 
 
 def get_time_now():
-    """ This function returns the current time
-    as mtime(float) in string form """
+    """
+    This function returns the current time as mtime(float) in string form
+    """
     return calendar.timegm(time.gmtime())
 
 
 def db_get_file_details(path, db):
-    """ This function queries the database for details
-    and returns a list of results or false """
+    """
+    This function queries the database for file details
+    and returns a list of results or false
+    
+    :path: filename to be queried
+    :db: database connection object
+    """
     status = False
     cur = db.cursor()
     cur.execute('SELECT * '
@@ -83,8 +109,13 @@ def db_get_file_details(path, db):
 
 
 def db_update_file_details(path, db):
-    """ This function updates file size and age to database
-    as well as resets the passes value to zero"""
+    """ 
+    This function updates file size and age to database
+    as well as resets the passes value to zero
+    
+    :path: filename
+    :db: database connection object
+    """
     file_size = get_file_size(path)
     file_age = get_file_age(path)
     file_id = db_get_file_details(path, db)['id']
@@ -101,7 +132,12 @@ def db_update_file_details(path, db):
 
 
 def db_increment_passes(path, db):
-    """ This function increments the number of passes by 1 """
+    """ 
+    This function increments the number of passes by 1 
+    
+    :path: filename
+    :db: database connection object
+    """
     file_id = db_get_file_details(path, db)['id']
     file_passes = db_get_file_details(path, db)['passes']+1
     params = [file_passes, file_id]
@@ -115,8 +151,12 @@ def db_increment_passes(path, db):
 
 
 def db_insert_new_file(path, db):
-    """ This function creates a new database entry database
-    table structure can be viewed in other\db_script.txt """
+    """ 
+    This function creates a new database entry of a new file
+    
+    :path: filename
+    :db: database connection object
+    """
     file_size = get_file_size(path)
     file_age = get_file_age(path)
     params = [path, file_size, file_age]
@@ -129,7 +169,12 @@ def db_insert_new_file(path, db):
 
 
 def log_event(path, db):
-    """ This function prints the event to log """
+    """ 
+    This function prints monitoring events to log file
+    
+    :path: filename
+    :db: database connection object
+    """
     time_now = get_time_now()
     file_size = db_get_file_details(path, db)['size']
     file_age = db_get_file_details(path, db)['age']
@@ -148,17 +193,14 @@ def par(directory, branches, branch):
     :branches:  number of branches to be run
     :branch:  id of branch
     """
-
     complete_set = os.listdir(directory)
     selected_set = []  # to be appended
-
     i = 0
     while i <= len(complete_set):
         index = branch+i*branches
         if index <= len(complete_set):
             selected_set.append(complete_set[index-1])
         i += 1
-    
     return selected_set
 
 
@@ -168,8 +210,11 @@ def par(directory, branches, branch):
 
 
 def main(arguments=None):
-    """ This function runs the script when executed and given
-    a directory as parameter """
+    """ 
+    This function runs the script
+    
+    :arguments: contains parsed command line parameters
+    """
     start_time = time.time()
     args = parse_arguments(arguments)
     branches = int(args.branches)
@@ -188,7 +233,7 @@ def main(arguments=None):
     for file in selected_set:
         rawfile = file
         file = os.path.join(path, file)
-        if file.endswith('.txt' or '.cip'):  #.txt for testing
+        if file.endswith('.cip'):
             if db_get_file_details(file, db):  # Old file
                 if db_get_file_details(file, db)['passes'] < config.pass_limit:
                     # File transfer is incomplete
@@ -201,7 +246,7 @@ def main(arguments=None):
                                 db_get_file_details(file, db)['age'] >
                                 config.age_limit):
                             #   File hasn't changed in some time
-                            # Mark a pass on db table 0..5
+                            # Mark a pass on db table 0..3
                             db_increment_passes(file, db)
                     log_event(file, db)
                 else:
@@ -217,8 +262,14 @@ def main(arguments=None):
 
 
 def parse_arguments(arguments):
-    """ This function returns the parsed arguments path to
-    target dir and location of configuration file """
+    """ 
+    This function parses command line inputs and returns them for main()
+    
+    :branches: this is the total number of parallelizations to be run
+    :branch: this is a fraction of the parallelizations, e.g. 1 of 4
+    :config: full path to config.ini (or just config.ini if
+             cwd: lega-mirroring)
+    """
     parser = argparse.ArgumentParser(description='Check files\' age and size'
                                      ' in target directory and track them using'
                                      ' a MySQL database.')

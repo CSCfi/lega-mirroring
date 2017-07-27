@@ -6,15 +6,20 @@ import logging
 from configparser import ConfigParser
 from collections import namedtuple
 
-logging.basicConfig(filename='res_log.log',
+logging.basicConfig(filename='logs/res_log.log',
                     format='%(asctime)s %(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S',
                     level=logging.INFO)
 
 
 def get_conf(path_to_config):
-    """ This function reads configuration variables from an external file
-    and returns the configuration variables as a class object """
+    """ 
+    This function reads configuration variables from an external file
+    and returns the configuration variables as a class object 
+    
+    :path_to_config: full path to config.ini (or just config.ini if
+                     cwd: lega-mirroring)
+    """
     config = ConfigParser()
     config.read(path_to_config)
     conf = {'chunk_size': config.getint('func_conf', 'chunk_size'),
@@ -24,7 +29,13 @@ def get_conf(path_to_config):
 
 
 def decrypt(host_url, file_path):
-    """ This function returns a stream of decrypted data """
+    """ 
+    This function sends an HTTP request to an active
+    RES microservice and returns a stream of decrypted data 
+    
+    :host_url: address of RES microservice
+    :file_path: full path to .cip file to be decrypted
+    """
     params = {'filePath': file_path,
               'sourceFormat': 'aes128',
               'sourceKey': 'aeskey',
@@ -37,7 +48,13 @@ def decrypt(host_url, file_path):
 
 
 def encrypt(host_url, file_path):
-    """ This function returns a stream of crypted data """
+    """ 
+    This function sends an HTTP request to an active
+    RES microservice and returns a stream of encrypted data 
+    
+    :host_url: address of RES microservice
+    :file_path: full path to .bam file to be encrypted
+    """
     params = {'filePath': file_path,
               'destinationFormat': 'aes128',
               'destinationKey': 'aeskey'}
@@ -49,8 +66,16 @@ def encrypt(host_url, file_path):
 
 
 def write_to_file(crypt, feed, chnk, path):
-    """ This function handles a stream of data and writes
-    it to file """
+    """ 
+    This function handles a stream of data and writes
+    it to file. The function determines the file extension
+    by itself according to the given method (main parameter)
+    
+    :crypt: operating method given in main
+    :feed: stream of decrypted/encrypted data
+    :chnk: size of data read from stream and written to file
+    :path: full path to destination file
+    """
     if crypt == 'decrypt':
         newpath = path.replace('.cip', '')
         with open(newpath, 'wb+') as f:
@@ -69,7 +94,13 @@ def write_to_file(crypt, feed, chnk, path):
 
 
 def log_event(event, host, path):
-    """ This function logs successes and failures to file """
+    """ 
+    This function logs successes and failures to file 
+    
+    :event: pass or failed
+    :host: address of RES microservice
+    :path: full path to original file (before crypt-operations)
+    """
     if event:
         logging.info(' OK: http-request: ' + host +
                      ' path: ' + path)
@@ -86,7 +117,11 @@ def log_event(event, host, path):
 
 
 def main(arguments=None):
-    """ This function runs the script with given arguments (host and path) """
+    """ 
+    This function runs the script
+    
+    :arguments: contains parsed command line parameters
+    """
     args = parse_arguments(arguments)
     method = args.method
     path = args.path
@@ -102,9 +137,15 @@ def main(arguments=None):
 
 
 def parse_arguments(arguments):
-    """ This function returns the parsed arguments host and path
-    host : url to RES microservice
-    path : path to file to be worked on """
+    """ 
+    This function parses command line inputs and returns them for main()
+    
+    :method: parameter that determines the operation of the script
+             either encrypt or decrypt, can not be left empty
+    :path: path to file to be worked on 
+    :path_to_config: full path to config.ini (or just config.ini if
+                     cwd: lega-mirroring)
+    """
     parser = argparse.ArgumentParser(description='Utilizes RES Microservice'
                                      ' to decrypt or encrypt files.')
     parser.add_argument('method',
