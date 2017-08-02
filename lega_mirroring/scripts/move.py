@@ -38,8 +38,13 @@ def move(file, md5, dest):
     :dest: destination directory
     """
     try:
-        os.rename(file, os.path.join('/' + dest, ntpath.basename(file)))
-        os.rename(md5, os.path.join('/' + dest, ntpath.basename(md5)))
+        os.rename(file, os.path.join(dest, ntpath.basename(file)))
+        os.rename(md5, os.path.join(dest, ntpath.basename(md5)))
+        filebase = file.replace('.cip.csc', '')
+        os.remove(filebase)  # rm .bam
+        os.remove(filebase + '.cip')  # rm .bam.cip
+        os.remove(filebase + '.md5')  # rm .bam.md5
+        os.remove(filebase + '.cip.md5')  # rm .bam.cip.md5
     except:
         pass
     log_event(file, dest)
@@ -71,7 +76,6 @@ def main(arguments=None):
     args = parse_arguments(arguments)
     conf = args.path_to_config
     config = get_conf(conf)
-    # move file from processing(wf2) to archive
     move(args.file, args.md5, config.end_storage)
     return
 

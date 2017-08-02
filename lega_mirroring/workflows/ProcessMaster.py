@@ -48,7 +48,7 @@ class Launch(luigi.Task):
     branches = luigi.Parameter()
     branch = luigi.Parameter()
     config = luigi.Parameter()
-
+    
     def requires(self):
         conf = get_conf(self.config)
         path = conf.path_processing
