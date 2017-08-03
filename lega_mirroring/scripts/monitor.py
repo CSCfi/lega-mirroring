@@ -94,7 +94,7 @@ def db_get_file_details(path, db):
     status = False
     cur = db.cursor()
     cur.execute('SELECT * '
-                'FROM files '
+                'FROM trackingtable '
                 'WHERE name=%s;',
                 [path])
     result = cur.fetchall()
@@ -121,7 +121,7 @@ def db_update_file_details(path, db):
     file_id = db_get_file_details(path, db)['id']
     params = [file_size, file_age, file_id]
     cur = db.cursor()
-    cur.execute('UPDATE files '
+    cur.execute('UPDATE trackingtable '
                 'SET size=%s, '
                 'age=%s, '
                 'passes=0 '
@@ -142,7 +142,7 @@ def db_increment_passes(path, db):
     file_passes = db_get_file_details(path, db)['passes']+1
     params = [file_passes, file_id]
     cur = db.cursor()
-    cur.execute('UPDATE files '
+    cur.execute('UPDATE trackingtable '
                 'SET passes=%s '
                 'WHERE id=%s;',
                 params)
@@ -161,7 +161,7 @@ def db_insert_new_file(path, db):
     file_age = get_file_age(path)
     params = [path, file_size, file_age]
     cur = db.cursor()
-    cur.execute('INSERT INTO files '
+    cur.execute('INSERT INTO trackingtable '
                 'VALUES (NULL, %s, %s, %s, 0);',
                 params)
     db.commit()
