@@ -1,8 +1,31 @@
-CREATE TABLE files (
-	id int NOT NULL AUTO_INCREMENT,
-	name varchar(64) NOT NULL,
-	size varchar(32) NOT NULL,
-	age varchar(32) NOT NULL,
-	passes int NOT NULL,
-	PRIMARY KEY (id)
+CREATE DATABASE dev_ega_downloader;
+USE dev_ega_downloader;
+
+# For TransferTracking.py
+CREATE TABLE trackingtable (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(128) NOT NULL,
+    size VARCHAR(32) NOT NULL,
+    age VARCHAR(32) NOT NULL,
+    passes INT NOT NULL,
+    PRIMARY KEY (id)
 );
+
+# For TransferProcessing.py
+CREATE TABLE file (
+    file_id VARCHAR(128) NULL,
+    file_name VARCHAR(128) NULL,
+    file_size INT8 NULL,
+    file_md5 VARCHAR(32) NULL,
+    status VARCHAR(13) NULL
+);
+
+CREATE UNIQUE INDEX file_id_idx ON dev_ega_downloader.file (file_id);
+
+CREATE TABLE filedataset (
+    dataset_id VARCHAR(128) NULL,
+    file_id VARCHAR(128) NULL
+);
+
+CREATE UNIQUE INDEX dataset_id_idx ON dev_ega_downloader.filedataset (dataset_id, file_id);
+CREATE UNIQUE INDEX file_id_idx ON dev_ega_downloader.filedataset (file_id, dataset_id);
