@@ -1,9 +1,11 @@
 #!/usr/bin/env python3.4
+import MySQLdb
 import sys
 import argparse
 import logging
 import hashlib
 import os
+import ntpath
 from configparser import ConfigParser
 from collections import namedtuple
 
@@ -23,10 +25,32 @@ def get_conf(path_to_config):
     """
     config = ConfigParser()
     config.read(path_to_config)
-    conf = {'chunk_size': config.getint('func_conf', 'chunk_size')}
+    conf = {'chunk_size': config.getint('func_conf', 'chunk_size'),
+            'host': config.get('database', 'host'),
+            'user': config.get('database', 'user'),
+            'passwd': config.get('database', 'passwd'),
+            'db': config.get('database', 'db'),
+            'path_gridftp': config.get('workspaces', 'receiving')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
+    
+def db_init(hostname, username, password, database):
+    """ 
+    This function initializes database connection and returns a connection
+    object that will be used as an executale cursor object
+    
+    :hostname: address of mysql server
+    :username: username to log in to mysql server
+    :password: password associated with :username: to log in to mysql server
+    :database: database to be worked on
+    """
+    db = MySQLdb.connect(host=hostname,
+                         user=username,
+                         passwd=password,
+                         db=database)
+    return db
+    
 
 def hash_md5_for_file(method, path, chunk_size):
     """ 
@@ -52,8 +76,10 @@ def hash_md5_for_file(method, path, chunk_size):
         raise Exception('file ' + path + ' not found')
     return md5
 
+'''
+DEPRECATED 4.8., switched to db_fetch_md5()
 
-def get_md5_from_file(path):
+def get_md5_from_file(db, path):
     """ 
     This function reads a file and returns the md5 checksum inside 
     
@@ -62,6 +88,33 @@ def get_md5_from_file(path):
     path_to_md5 = path + '.md5'
     with open(path_to_md5, 'r') as f:
         md5 = f.read()
+    return md5
+'''
+
+def db_fetch_md5(db, path_file, path_gridftp):
+    """
+    This function queries the database for an md5 hash matching
+    the given filename and returns it
+    
+    :db: database connection object
+    :path_file: path to file to be checked
+    :path_gridftp: path to receiving folder, needed for db query
+    """
+    # fix path to match that in db
+    filename = os.path.join(path_gridftp, ntpath.basename(path_file))
+    md5 = False
+    cur = db.cursor()
+    cur.execute('SELECT file_md5 '
+                'FROM file '
+                'WHERE file_name=%s;',
+                [filename])
+    result = cur.fetchall()
+    if cur.rowcount >= 1:
+        for row in result:
+            md5 = row[0]
+    #if cur.rowcount >=1:
+    #    for row in result:
+    #        md5 = row[0]
     return md5
 
 
@@ -78,6 +131,11 @@ def main(arguments=None):
     """
     args = parse_arguments(arguments) 
     config = get_conf(args.config)
+    # Establish database connection
+    db = db_init(config.host,
+                 config.user,
+                 config.passwd,
+                 config.db)
     retval = False
     # Generate md5 hash and save to file.md5
     if args.method == 'hash':
@@ -90,18 +148,18 @@ def main(arguments=None):
     # Read md5 checksum from external file and compare it to hashed value
     elif args.method == 'check':
         md5 = hash_md5_for_file(args.method, args.path, config.chunk_size)
-        key_md5 = get_md5_from_file(args.path)
+        key_md5 = db_fetch_md5(db, args.path, config.path_gridftp)
         retval = (md5 == key_md5)  # true if checksums match
         if md5 == key_md5:
             logging.info('OK (md5 checksums match)'
                          ' From: ' + args.path +
                          ' Hashed md5: ' + md5 +
-                         ' Received md5: ' + key_md5)
+                         ' Received md5: ' + str(key_md5))
         else:
             logging.info('ERROR (md5 checksums don\'t match)'
                          ' From: ' + args.path +
                          ' Hashed md5: ' + md5 +
-                         ' Received md5: ' + key_md5)
+                         ' Received md5: ' + str(key_md5))
     else:
         raise Exception('invalid method, but be \'hash\' or \'check\'')
     return retval
