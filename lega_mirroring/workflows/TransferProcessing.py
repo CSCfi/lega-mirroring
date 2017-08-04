@@ -2,7 +2,12 @@ import luigi
 import lega_mirroring.scripts.res
 import lega_mirroring.scripts.md5
 import lega_mirroring.scripts.move
-#import lega_mirroring.scripts.storeloc #stage 7, script not yet created
+#import lega_mirroring.scripts.store #stage 7, script not yet created
+
+'''
+DEPRECATED 4.8.
+STAGE 1/7 TO BE REMOVED
+
 
 class VerifyIntegrityOfTransferredFile(luigi.Task):
     # WORKFLOW 2 STAGE 1/7
@@ -20,16 +25,17 @@ class VerifyIntegrityOfTransferredFile(luigi.Task):
     
     def output(self):
         return luigi.LocalTarget('output/1.txt')
-
+'''
 
 class DecryptTransferredFile(luigi.Task):
     # WORKFLOW 2 STAGE 2/7
 
     file = luigi.Parameter()
     config = luigi.Parameter()
-
-    def requires(self):
-        return VerifyIntegrityOfTransferredFile(file=self.file, config=self.config)
+    
+    # DEPRECATED 4.8.
+    #def requires(self):
+    #    return VerifyIntegrityOfTransferredFile(file=self.file, config=self.config)
 
     def run(self):
         lega_mirroring.scripts.res.main(['decrypt', self.file, self.config])
