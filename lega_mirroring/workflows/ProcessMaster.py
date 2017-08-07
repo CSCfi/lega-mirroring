@@ -3,7 +3,7 @@ import os
 from configparser import ConfigParser
 from collections import namedtuple
 import lega_mirroring.scripts.monitor
-from lega_mirroring.workflows.TransferProcessing import ArchiveFile
+from lega_mirroring.workflows.TransferProcessing import UpdateFileStatus
 
 # functions for luigi class 'Launch'
 
@@ -56,4 +56,4 @@ class Launch(luigi.Task):
         for filename in selected_set:
             if filename.endswith('.cip'):
                 filepath = os.path.join(path, filename)
-                yield ArchiveFile(file=filepath, config=self.config)
+                yield UpdateFileStatus(file=filepath, config=self.config)
