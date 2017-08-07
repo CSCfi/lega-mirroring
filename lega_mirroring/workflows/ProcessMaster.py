@@ -1,5 +1,6 @@
 import luigi
 import os
+import shutil
 from configparser import ConfigParser
 from collections import namedtuple
 import lega_mirroring.scripts.monitor
@@ -44,6 +45,10 @@ def par(directory, branches, branch):
 
 class Launch(luigi.Task):
     # Luigi class for starting TransferProcessing WORKFLOW
+    
+    # Remove output folder if it exists
+    if os.path.exists('output'):
+        shutil.rmtree('output')
 
     branches = luigi.Parameter()
     branch = luigi.Parameter()
