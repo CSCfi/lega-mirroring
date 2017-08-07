@@ -76,20 +76,6 @@ def hash_md5_for_file(method, path, chunk_size):
         raise Exception('file ' + path + ' not found')
     return md5
 
-'''
-DEPRECATED 4.8., switched to db_fetch_md5()
-
-def get_md5_from_file(db, path):
-    """ 
-    This function reads a file and returns the md5 checksum inside 
-    
-    :path: path to md5 file
-    """
-    path_to_md5 = path + '.md5'
-    with open(path_to_md5, 'r') as f:
-        md5 = f.read()
-    return md5
-'''
 
 def db_fetch_md5(db, path_file, path_gridftp):
     """
@@ -112,9 +98,6 @@ def db_fetch_md5(db, path_file, path_gridftp):
     if cur.rowcount >= 1:
         for row in result:
             md5 = row[0]
-    #if cur.rowcount >=1:
-    #    for row in result:
-    #        md5 = row[0]
     return md5
 
 
@@ -145,7 +128,7 @@ def main(arguments=None):
             logging.info('Created md5 hash for ' + args.path + ' (' + md5 + ')')
         else:
             logging.info('Error creating md5 hash for ' + args.path + ', file not found.')
-    # Read md5 checksum from external file and compare it to hashed value
+    # Read md5 checksum from database and compare it to hashed value
     elif args.method == 'check':
         md5 = hash_md5_for_file(args.method, args.path, config.chunk_size)
         key_md5 = db_fetch_md5(db, args.path, config.path_gridftp)

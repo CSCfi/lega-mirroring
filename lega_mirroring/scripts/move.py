@@ -43,8 +43,6 @@ def move(file, md5, dest):
         filebase = file.replace('.cip.csc', '')
         os.remove(filebase)  # rm .bam
         os.remove(filebase + '.cip')  # rm .bam.cip
-        os.remove(filebase + '.md5')  # rm .bam.md5
-        os.remove(filebase + '.cip.md5')  # rm .bam.cip.md5
     except:
         pass
     log_event(file, dest)
