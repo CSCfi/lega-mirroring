@@ -3,7 +3,6 @@ import argparse
 import sys
 
 ''' lega end-to-end test tool '''
-''' mi.py -- missing items '''
 
 def write_gridftp():
     contents = os.listdir('/data/incoming/gridftp-endpoint/')

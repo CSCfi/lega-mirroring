@@ -98,7 +98,6 @@ def main(arguments=None):
     for file in os.listdir(config.metadata):
         file = os.path.join(config.metadata, file)
         db_insert_metadata(db, request_dataset_metadata(file))
-        print(file) ## TÄMÄ ON TESTAUSTA VARTEN ##
     return
 
 
@@ -106,8 +105,6 @@ def parse_arguments(arguments):
     parser = argparse.ArgumentParser(description='This script reads dataset'
                                      ' metadata from json and inserts it to'
                                      ' a database table')
-    #parser.add_argument('dataset_id',
-    #                help='EGAD id, ex. EGAD000000000...')
     parser.add_argument('config',
                         help='path to config.ini')
     return parser.parse_args(arguments)

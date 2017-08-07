@@ -9,14 +9,6 @@ import random
 
 # step 1 create .bam files
 # step 2 hash md5 values for files and save them to .json file
-#   2.1 generate random 1-10
-#   2.2 random amount of files (2.1)
-#   2.3 create .json file
-#       2.3.1 generate random EGAD
-#       2.3.2 generated random EGAFs for files
-#       2.3.3 hash md5 for files
-#       2.3.4 read file size
-#       end result is EGADxxxxxx.json
 # step 3 encrypt .bam files to .bam.cip, then remove .bam files
 
 def step1(amount):
@@ -44,7 +36,6 @@ def step2():
             nfiles = random.randint(3, 9)
             if nfiles > len(dirlist):
                 nfiles = len(dirlist)
-            print(nfiles) ## TÄMÄ ON TESTAUSTA VARTEN ##
             egad = random.randint(100000,900000)
             egaf = random.randint(100000,900000)
             f = open('/data/incoming/metadata/EGAD0000' + str(egad) + '.json', 'w')
