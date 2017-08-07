@@ -32,14 +32,12 @@ Workflow 2 can be run from command line (*cwd: lega-mirroring*) by typing:
 
 
 The given file is carried out through the following processes: 
-* (1) after-transfer md5 checksum, 
-* (2) decryption, 
-* (3) after-decryption md5 checksum, 
-* (4) encryption, 
-* (5) after-encryption md5 hash generation, 
-* (6) moving file to destination end storage location. 
-
-(to do: step (7) save end storage location to tracking table)
+* (1) decryption, 
+* (2) after-decryption md5 checksum, 
+* (3) encryption, 
+* (4) after-encryption md5 hash generation, 
+* (5) moving file to destination end storage location. 
+* (6) update file details in database
 
 ## ProcessMaster: Workflow 2 Automator
 This luigi script is used to start parallel TransferProcessing.py luigi workflows. `TransferProcessing.py` takes a single file as input,
