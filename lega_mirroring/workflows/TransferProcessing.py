@@ -1,41 +1,15 @@
 import luigi
+import ntpath
 import lega_mirroring.scripts.res
 import lega_mirroring.scripts.md5
 import lega_mirroring.scripts.move
-#import lega_mirroring.scripts.store #stage 7, script not yet created
-
-'''
-DEPRECATED 4.8.
-STAGE 1/7 TO BE REMOVED
-
-
-class VerifyIntegrityOfTransferredFile(luigi.Task):
-    # WORKFLOW 2 STAGE 1/7
-
-    file = luigi.Parameter()
-    config = luigi.Parameter()
-
-    def run(self):
-        md5 = lega_mirroring.scripts.md5.main(['check', self.file, self.config])
-        if not md5:
-            raise Exception('md5 mismatch')
-        with self.output().open('w') as fd:
-            fd.write(str(self.file))
-        return
-    
-    def output(self):
-        return luigi.LocalTarget('output/1.txt')
-'''
+import lega_mirroring.scripts.update
 
 class DecryptTransferredFile(luigi.Task):
-    # WORKFLOW 2 STAGE 2/7
+    # WORKFLOW 2 STAGE 1/6
 
     file = luigi.Parameter()
     config = luigi.Parameter()
-    
-    # DEPRECATED 4.8.
-    #def requires(self):
-    #    return VerifyIntegrityOfTransferredFile(file=self.file, config=self.config)
 
     def run(self):
         lega_mirroring.scripts.res.main(['decrypt', self.file, self.config])
@@ -48,7 +22,7 @@ class DecryptTransferredFile(luigi.Task):
     
 
 class VerifyIntegrityOfDecryptedFile(luigi.Task):
-    # WORKFLOW 2 STAGE 3/7
+    # WORKFLOW 2 STAGE 2/6
 
     file = luigi.Parameter()
     config = luigi.Parameter()
@@ -71,7 +45,7 @@ class VerifyIntegrityOfDecryptedFile(luigi.Task):
 
 
 class EncryptVerifiedFile(luigi.Task):
-    # WORKFLOW 2 STAGE 4/7
+    # WORKFLOW 2 STAGE 3/6
 
     file = luigi.Parameter()
     config = luigi.Parameter()
@@ -91,7 +65,7 @@ class EncryptVerifiedFile(luigi.Task):
 
 
 class CreateHashForEncryptedFile(luigi.Task):
-    # WORKFLOW 2 STAGE 5/7
+    # WORKFLOW 2 STAGE 4/6
 
     file = luigi.Parameter()
     config = luigi.Parameter()
@@ -111,7 +85,7 @@ class CreateHashForEncryptedFile(luigi.Task):
 
 
 class ArchiveFile(luigi.Task):
-    # WORKFLOW 2 STAGE 6/7
+    # WORKFLOW 2 STAGE 5/6
 
     file = luigi.Parameter()
     config = luigi.Parameter()
@@ -130,9 +104,9 @@ class ArchiveFile(luigi.Task):
     def output(self):
         return luigi.LocalTarget('output/6.txt')
 
-'''
-class StoreFileLocationToDB(luigi.Task):
-    # WORKFLOW 2 STAGE 7/7
+
+class UpdateFileStatus(luigi.Task):
+    # WORKFLOW 2 STAGE 6/6
 
     file = luigi.Parameter()
     config = luigi.Parameter()
@@ -141,13 +115,13 @@ class StoreFileLocationToDB(luigi.Task):
         return ArchiveFile(file=self.file, config=self.config)
 
     def run(self):
-        # Make a script that fills this table
-        # https://github.com/elixir-europe/ega-data-api-v3-downloader/blob/master/src/main/resources/File.sql
-        lega_mirroring.scripts.storeloc.main('...')
+        # cut path and send only file.bam
+        basefile = ntpath.basename(self.file)
+        basefile = basefile.replace('.cip', '')
+        lega_mirroring.scripts.update.main([basefile, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
         return
 
     def output(self):
         return luigi.LocalTarget('output/7.txt')
-'''
