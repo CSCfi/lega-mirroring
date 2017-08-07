@@ -15,7 +15,7 @@ This script is used to quickly see the amount of files in each directory. The sc
 Reads the `.json` files generated in `metadata` by `CreateTestFiles.py` and inserts the contents into database. This simulates the 
 EBI EGA REST API.
 
-#### TrackItems.py
+##### TrackItems.py
 This script is used to verify that all files have been archived. The script has three methods; `start`, `end` and `compare`. It can be
 run by typing `python3 TrackItems.py method` for example `python3 TrackItems.py start`. `start`-method creates a .txt file listing the
 files in `receiving`. `end`-method creates a .txt file listing the files in `end-storage`. `compare`-method compares the two previously
