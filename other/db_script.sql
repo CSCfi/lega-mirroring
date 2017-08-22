@@ -29,3 +29,16 @@ CREATE TABLE filedataset (
 
 CREATE UNIQUE INDEX dataset_id_idx ON dev_ega_downloader.filedataset (dataset_id, file_id);
 CREATE UNIQUE INDEX file_id_idx ON dev_ega_downloader.filedataset (file_id, dataset_id);
+
+# Dataset logger
+CREATE TABLE dataset_log (
+    dataset_id VARCHAR(128),
+    n_files INT,
+    n_bytes INT,
+    date_requested TIMESTAMP NULL,
+    date_download_start TIMESTAMP NULL,
+    date_download_end TIMESTAMP NULL,
+    date_processing_end TIMESTAMP NULL
+);
+
+CREATE UNIQUE INDEX dataset_id_idx ON dev_ega_downloader.dataset_log (dataset_id);
