@@ -7,6 +7,7 @@ from collections import namedtuple
 import sys
 import json
 import os
+import lega_mirroring.scripts.logger
 
 
 def get_conf(path_to_config):
@@ -45,10 +46,6 @@ def db_init(hostname, username, password, database):
     return db
 
 
-''' # testcode # '''
-''' # testcode # '''
-
-
 def request_dataset_metadata(egad):
     '''
     proto: read file and return mock json
@@ -80,10 +77,6 @@ def db_insert_metadata(db, metadata):
     return
 
 
-''' # testcode # '''
-''' # testcode # '''
-
-
 def main(arguments=None):
     args = parse_arguments(arguments)
     conf = args.config
@@ -98,7 +91,7 @@ def main(arguments=None):
     for file in os.listdir(config.metadata):
         file = os.path.join(config.metadata, file)
         db_insert_metadata(db, request_dataset_metadata(file))
-    return
+        lega_mirroring.scripts.logger.main(['date_requested', file, conf])
 
 
 def parse_arguments(arguments):
