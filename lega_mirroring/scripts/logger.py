@@ -22,7 +22,8 @@ def get_conf(path_to_config):
     conf = {'host': config.get('database', 'host'),
             'user': config.get('database', 'user'),
             'passwd': config.get('database', 'passwd'),
-            'db': config.get('database', 'db')}
+            'db': config.get('database', 'db'),
+            'path_metadata': config.get('workspaces', 'metadata')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
@@ -55,7 +56,20 @@ def read_json(jsonpath):
         n_bytes += metadata[i]['fileSize']
     return (n_files, n_bytes)
     
-    
+   
+def db_dataset_exists(db, dataset_id):
+    exists = False
+    cur = db.cursor()
+    cur.execute('SELECT dataset_id '
+                'FROM dataset_log '
+                'WHERE dataset_id=%s',
+                [dataset_id])
+    result = cur.fetchall()
+    if cur.rowcount >= 1:
+        exists = True
+    return exists
+
+   
 def db_date_requested(db, dataset_id, n):
     cur = db.cursor()
     n_files = n[0]
@@ -98,6 +112,22 @@ def db_date_processing_end(db, dataset_id):
     return
     
     
+def db_date_is_null(db, dataset_id):
+    status = False
+    cur = db.cursor()
+    cur.execute('SELECT date_download_start '
+                'FROM dataset_log '
+                'WHERE dataset_id=%s',
+                [dataset_id])
+    result = cur.fetchall()
+    if cur.rowcount >= 1:
+        for row in result:
+            if row[0] == None:
+                # if query is empty, date is null
+                status = True
+    return status
+
+    
 def main(arguments=None):
     """ 
     This function runs the script
@@ -105,9 +135,7 @@ def main(arguments=None):
     :arguments: contains parsed command line parameters
     """
     args = parse_arguments(arguments)
-    n = read_json(args.path)  # n_files and n_bytes
-    dataset = ntpath.basename(args.path)
-    dataset_id = dataset.replace('.json', '')  # plain EGAD, no path
+    dataset_id = args.dataset_id
     method = args.method
     config = get_conf(args.config)
     # Establish database connection
@@ -115,16 +143,28 @@ def main(arguments=None):
                  config.user,
                  config.passwd,
                  config.db)
-    if method == 'date_requested':
-        db_date_requested(db, dataset_id, n)
-    elif method == 'date_download_start':
-        db_date_download_start(db, dataset_id)
-    elif method == 'date_download_end':
-        db_date_download_end(db, dataset_id)
-    elif method == 'date_processing_end':
-        db_date_processing_end(db, dataset_id)
-    else:
-        print('Invalid method: ' + method)
+    # Check if dataset is already added to log
+    if (db_dataset_exists(db, dataset_id)):
+        if method == 'date_download_start':
+            # If date is NULL on column, update date, else don't
+            if db_date_is_null(db, dataset_id):
+                db_date_download_start(db, dataset_id)
+        elif method == 'date_download_end':
+            db_date_download_end(db, dataset_id)
+        elif method == 'date_processing_end':
+            db_date_processing_end(db, dataset_id)
+        else:
+            print('Invalid method: ' + method + ' for dataset: ' + dataset_id)
+    else:  # If not, create new entry
+        if method == 'date_requested':
+            # put /path/ and .json to EGAD
+            path = args.dataset_id + '.json'
+            path = os.path.join(config.path_metadata, path)
+            n = read_json(path)  # n_files and n_bytes
+            db_date_requested(db, dataset_id, n)
+        else:
+            print('Error: ' + dataset_id + ' not in table, and wrong method:'
+                  ' ("' + method + '") used.')
     return
 
 
@@ -137,13 +177,17 @@ def parse_arguments(arguments):
     :config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """
-    parser = argparse.ArgumentParser(description='Generate md5 hash '
-                                     'or check md5 sum '
-                                     'for given file.')
+    parser = argparse.ArgumentParser(description='Logs dataset processes '
+                                     'to database with timestamps.')
     parser.add_argument('method',
-                        help='determines which operation date is logged.')
-    parser.add_argument('path',
-                        help='path to dataset metadata.json')  # later replace with api request
+                        help='determines which operation date is logged. '
+                        '\nPossible values are: '
+                        '\ndate_requested '
+                        '\ndate_download_start '
+                        '\ndate_download_end '
+                        '\ndate_processing_end')
+    parser.add_argument('dataset_id',
+                        help='EGAD0000....')
     parser.add_argument('config',
                         help='path to configuration file.')
     return parser.parse_args(arguments)
