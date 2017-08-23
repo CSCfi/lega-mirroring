@@ -7,6 +7,7 @@ from collections import namedtuple
 import sys
 import json
 import os
+import ntpath
 import lega_mirroring.scripts.logger
 
 
@@ -91,7 +92,10 @@ def main(arguments=None):
     for file in os.listdir(config.metadata):
         file = os.path.join(config.metadata, file)
         db_insert_metadata(db, request_dataset_metadata(file))
-        lega_mirroring.scripts.logger.main(['date_requested', file, conf])
+        # strip /path/ and .json to get EGAD
+        dataset = ntpath.basename(file)
+        dataset_id = dataset.replace('.json', '')
+        lega_mirroring.scripts.logger.main(['date_requested', dataset_id, conf])
 
 
 def parse_arguments(arguments):
