@@ -9,6 +9,7 @@ import argparse
 import logging
 from configparser import ConfigParser
 from collections import namedtuple
+import lega_mirroring.scripts.logger
 
 # Log events to file
 logging.basicConfig(filename='monitor_log.log',
@@ -203,6 +204,29 @@ def par(directory, branches, branch):
         i += 1
     return selected_set
 
+    
+def lookup_dataset_id(db, file):
+    """
+    This function finds the dataset id the given file
+    belongs to and returns it as a string
+    
+    :db: database connection object
+    :file: datafile belonging to a dataset
+    """
+    dataset_id = 0
+    cur = db.cursor()
+    cur.execute('SELECT dataset_id '
+                'FROM filedataset '
+                'WHERE file_id=('
+                'SELECT file_id '
+                'FROM file '
+                'WHERE file_name=%s);',
+                [file])
+    result = cur.fetchall()
+    if cur.rowcount >= 1:
+        for row in result:
+            dataset_id = row[0]
+    return dataset_id
 
 '''*************************************************************'''
 #                         cmd-executable                          #
@@ -253,10 +277,16 @@ def main(arguments=None):
                     # move file from receiving(wf1) to processing(wf2)
                     try:
                         os.rename(file, os.path.join(config.path_processing, rawfile))
+                        # put timestamp to dataset_log table
+                        dataset_id = lookup_dataset_id(db, file)
+                        lega_mirroring.scripts.logger.main(['date_download_end', dataset_id, conf])
                     except:
                         pass
             else:  # New file
                 db_insert_new_file(file, db)
+                # put timestamp to dataset_log table
+                dataset_id = lookup_dataset_id(db, file)
+                lega_mirroring.scripts.logger.main(['date_download_start', dataset_id, conf])
                 log_event(file, db)
     return ('Runtime: ' + str(time.time()-start_time) + ' seconds')
 
