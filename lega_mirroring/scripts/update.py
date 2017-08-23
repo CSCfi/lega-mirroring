@@ -7,6 +7,7 @@ import os
 import ntpath
 from configparser import ConfigParser
 from collections import namedtuple
+import lega_mirroring.scripts.logger
 
 logging.basicConfig(filename='update_log.log',
                     format='%(asctime)s %(message)s',
@@ -69,10 +70,33 @@ def db_update_file(db, filename, path_archive, path_gridftp):
                 'WHERE file_name=%s;',
                 params)
     db.commit()
-    print(params)
     return
 
-
+    
+def lookup_dataset_id(db, file):
+    """
+    This function finds the dataset id the given file
+    belongs to and returns it as a string
+    
+    :db: database connection object
+    :file: datafile belonging to a dataset
+    """
+    dataset_id = 0
+    cur = db.cursor()
+    cur.execute('SELECT dataset_id '
+                'FROM filedataset '
+                'WHERE file_id=('
+                'SELECT file_id '
+                'FROM file '
+                'WHERE file_name=%s);',
+                [file])
+    result = cur.fetchall()
+    if cur.rowcount >= 1:
+        for row in result:
+            dataset_id = row[0]
+    return dataset_id
+    
+    
 '''*************************************************************'''
 #                         cmd-executable                          #
 '''*************************************************************'''
@@ -94,6 +118,10 @@ def main(arguments=None):
                  config.passwd,
                  config.db)
     db_update_file(db, args.path, config.path_archive, config.path_gridftp)
+    # put timestamp to dataset_log table
+    file = os.path.join(config.path_archive, args.path)
+    dataset_id = lookup_dataset_id(db, file)
+    lega_mirroring.scripts.logger.main(['date_processing_end', dataset_id, conf])
     return
 
 
