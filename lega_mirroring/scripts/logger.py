@@ -122,7 +122,7 @@ def db_date_is_null(db, dataset_id):
     result = cur.fetchall()
     if cur.rowcount >= 1:
         for row in result:
-            if row[0] == None:
+            if row[0] is None:
                 # if query is empty, date is null
                 status = True
     return status
