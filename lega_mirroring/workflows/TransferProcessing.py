@@ -1,5 +1,5 @@
 import luigi
-import ntpath
+import os
 import lega_mirroring.scripts.res
 import lega_mirroring.scripts.md5
 import lega_mirroring.scripts.move
@@ -31,8 +31,11 @@ class VerifyIntegrityOfDecryptedFile(luigi.Task):
         return DecryptTransferredFile(file=self.file, config=self.config)
 
     def run(self):
-        # remove .cip extension from filename
-        filename_decr = self.file.replace('.cip', '')
+        # remove crypt extension from filename
+        if self.file.endswith('.cip'):
+            filename_decr = self.file.replace('.cip', '')
+        elif self.file.endswith('.gpg'):
+            filename_decr = self.file.replace('.gpg', '')
         md5 = lega_mirroring.scripts.md5.main(['check', filename_decr, self.config])
         if not md5:
             raise Exception('md5 mismatch')
@@ -54,7 +57,11 @@ class EncryptVerifiedFile(luigi.Task):
         return VerifyIntegrityOfDecryptedFile(file=self.file, config=self.config)
 
     def run(self):
-        filename_decr = self.file.replace('.cip', '')
+        # remove crypt extension from filename
+        if self.file.endswith('.cip'):
+            filename_decr = self.file.replace('.cip', '')
+        elif self.file.endswith('.gpg'):
+            filename_decr = self.file.replace('.gpg', '')
         lega_mirroring.scripts.res.main(['encrypt', filename_decr, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
@@ -94,8 +101,15 @@ class ArchiveFile(luigi.Task):
         return CreateHashForEncryptedFile(file=self.file, config=self.config)
 
     def run(self):
-        cscfile = self.file + '.csc'
-        cscmd5 = cscfile + '.md5'
+        if self.file.endswith('.cip'):
+            cscfile = self.file + '.csc'
+            cscmd5 = cscfile + '.md5'
+        elif self.file.endswith('.gpg'):
+            cscfile = self.file.replace('.gpg', '.cip.csc')
+            cscmd5 = self.file.replace('.gpg', '.cip.csc.md5')
+        elif self.file.endswith('.bam'):
+            cscfile = self.file + '.cip.csc'
+            cscmd5 = cscfile + '.cip.md5'
         lega_mirroring.scripts.move.main([cscfile, cscmd5, self.config])
         with self.output().open('w') as fd:
             fd.write(str(cscfile + '\n' + cscmd5))
@@ -116,8 +130,13 @@ class UpdateFileStatus(luigi.Task):
 
     def run(self):
         # cut path and send only file.bam
-        basefile = ntpath.basename(self.file)
+        basefile = os.path.basename(self.file)
         basefile = basefile.replace('.cip', '')
+        # remove crypt extension from filename
+        if self.file.endswith('.cip'):
+            basefile = basefile.replace('.cip', '')
+        elif self.file.endswith('.gpg'):
+            basefile = basefile.replace('.gpg', '')
         lega_mirroring.scripts.update.main([basefile, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))

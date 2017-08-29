@@ -4,7 +4,6 @@ import sys
 import argparse
 import logging
 import os
-import ntpath
 from configparser import ConfigParser
 from collections import namedtuple
 import lega_mirroring.scripts.logger

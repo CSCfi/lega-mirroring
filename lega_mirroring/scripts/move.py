@@ -1,6 +1,5 @@
 #!/usr/bin/env python3.4
 import os
-import ntpath
 import argparse
 import sys
 import logging
@@ -38,11 +37,14 @@ def move(file, md5, dest):
     :dest: destination directory
     """
     try:
-        os.rename(file, os.path.join(dest, ntpath.basename(file)))
-        os.rename(md5, os.path.join(dest, ntpath.basename(md5)))
+        os.rename(file, os.path.join(dest, os.path.basename(file)))
+        os.rename(md5, os.path.join(dest, os.path.basename(md5)))
         filebase = file.replace('.cip.csc', '')
-        os.remove(filebase)  # rm .bam
-        os.remove(filebase + '.cip')  # rm .bam.cip
+        try:
+            os.remove(filebase)  # rm .bam
+            os.remove(filebase + '.cip')  # rm .bam.cip
+        except:
+            pass
     except:
         pass
     log_event(file, dest)

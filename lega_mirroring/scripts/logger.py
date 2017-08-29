@@ -4,7 +4,6 @@ import sys
 import argparse
 import os
 import json
-import ntpath
 from configparser import ConfigParser
 from collections import namedtuple
 

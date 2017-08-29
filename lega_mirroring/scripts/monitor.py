@@ -257,7 +257,8 @@ def main(arguments=None):
     for file in selected_set:
         rawfile = file
         file = os.path.join(path, file)
-        if file.endswith('.cip'):
+        ext = ['.cip', '.gpg', '.bam']  # allowed extensions
+        if file.endswith(tuple(ext)):
             if db_get_file_details(file, db):  # Old file
                 if db_get_file_details(file, db)['passes'] < config.pass_limit:
                     # File transfer is incomplete

@@ -5,7 +5,6 @@ import argparse
 import logging
 import hashlib
 import os
-import ntpath
 from configparser import ConfigParser
 from collections import namedtuple
 
@@ -87,7 +86,7 @@ def db_fetch_md5(db, path_file, path_gridftp):
     :path_gridftp: path to receiving folder, needed for db query
     """
     # fix path to match that in db
-    filename = os.path.join(path_gridftp, ntpath.basename(path_file))
+    filename = os.path.join(path_gridftp, os.path.basename(path_file))
     md5 = False
     cur = db.cursor()
     cur.execute('SELECT file_md5 '
