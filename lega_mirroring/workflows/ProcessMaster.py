@@ -31,11 +31,14 @@ def par(directory, branches, branch):
     :branches:  number of branches to be run
     :branch:  id of branch
     """
-    complete_set = os.listdir(directory)
+    complete_set = []  # to be appended
     selected_set = []  # to be appended
+    for root, dirs, files in os.walk(directory):
+        for item in files:
+            complete_set.append(os.path.join(root, item))
     i = 0
     while i <= len(complete_set):
-        index = int(branch)+i*int(branches)
+        index = branch+i*branches
         if index <= len(complete_set):
             selected_set.append(complete_set[index-1])
         i += 1
