@@ -194,8 +194,11 @@ def par(directory, branches, branch):
     :branches:  number of branches to be run
     :branch:  id of branch
     """
-    complete_set = os.listdir(directory)
+    complete_set = []  # to be appended
     selected_set = []  # to be appended
+    for root, dirs, files in os.walk(directory):
+        for item in files:
+            complete_set.append(os.path.join(root, item))
     i = 0
     while i <= len(complete_set):
         index = branch+i*branches
@@ -257,38 +260,36 @@ def main(arguments=None):
     for file in selected_set:
         rawfile = file
         file = os.path.join(path, file)
-        ext = ['.cip', '.gpg', '.bam']  # allowed extensions
-        if file.endswith(tuple(ext)):
-            if db_get_file_details(file, db):  # Old file
-                if db_get_file_details(file, db)['passes'] < config.pass_limit:
-                    # File transfer is incomplete
-                    if (get_file_size(file) >
-                            db_get_file_details(file, db)['size']):
-                        #   File size has changed
-                        db_update_file_details(file, db)
-                    else:  # File size hasn't changed
-                        if (get_time_now() -
-                                db_get_file_details(file, db)['age'] >
-                                config.age_limit):
-                            #   File hasn't changed in some time
-                            # Mark a pass on db table 0..3
-                            db_increment_passes(file, db)
-                    log_event(file, db)
-                else:
-                    # move file from receiving(wf1) to processing(wf2)
-                    try:
-                        os.rename(file, os.path.join(config.path_processing, rawfile))
-                        # put timestamp to dataset_log table
-                        dataset_id = lookup_dataset_id(db, file)
-                        lega_mirroring.scripts.logger.main(['date_download_end', dataset_id, conf])
-                    except:
-                        pass
-            else:  # New file
-                db_insert_new_file(file, db)
-                # put timestamp to dataset_log table
-                dataset_id = lookup_dataset_id(db, file)
-                lega_mirroring.scripts.logger.main(['date_download_start', dataset_id, conf])
+        if db_get_file_details(file, db):  # Old file
+            if db_get_file_details(file, db)['passes'] < config.pass_limit:
+                # File transfer is incomplete
+                if (get_file_size(file) >
+                        db_get_file_details(file, db)['size']):
+                    #   File size has changed
+                    db_update_file_details(file, db)
+                else:  # File size hasn't changed
+                    if (get_time_now() -
+                            db_get_file_details(file, db)['age'] >
+                            config.age_limit):
+                        #   File hasn't changed in some time
+                        # Mark a pass on db table 0..3
+                        db_increment_passes(file, db)
                 log_event(file, db)
+            else:
+                # move file from receiving(wf1) to processing(wf2)
+                try:
+                    os.rename(file, os.path.join(config.path_processing, rawfile))
+                    # put timestamp to dataset_log table
+                    dataset_id = lookup_dataset_id(db, file)
+                    lega_mirroring.scripts.logger.main(['date_download_end', dataset_id, conf])
+                except:
+                    pass
+        else:  # New file
+            db_insert_new_file(file, db)
+            # put timestamp to dataset_log table
+            dataset_id = lookup_dataset_id(db, file)
+            lega_mirroring.scripts.logger.main(['date_download_start', dataset_id, conf])
+            log_event(file, db)
     return ('Runtime: ' + str(time.time()-start_time) + ' seconds')
 
 
