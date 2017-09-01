@@ -62,7 +62,5 @@ class Launch(luigi.Task):
         path = conf.path_processing
         selected_set = par(path, self.branches, self.branch)
         for filename in selected_set:
-            ext = ['.cip', '.gpg', '.bam']  # allowed extensions
-            if filename.endswith(tuple(ext)):
-                filepath = os.path.join(path, filename)
-                yield UpdateFileStatus(file=filepath, config=self.config)
+            filepath = os.path.join(path, filename)
+            yield UpdateFileStatus(file=filepath, config=self.config)
