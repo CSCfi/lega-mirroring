@@ -185,20 +185,24 @@ def log_event(path, db):
     return
 
 
-def par(directory, branches, branch):
+def par(branches, branch, pathr):
     """
     This function reads a directory and generates a list
     of files to be checked by a single parallel process
     
-    :directory:  target directory to be sorted
     :branches:  number of branches to be run
     :branch:  id of branch
+    :pathr:  path_receiving from config.ini
     """
     complete_set = []  # to be appended
     selected_set = []  # to be appended
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(pathr):
         for item in files:
-            complete_set.append(os.path.join(root, item))
+            # form full path
+            fullpath = os.path.join(root, item)
+            # strip path (to leave subdirs if they exist)
+            relpath = fullpath.replace(pathr, '')
+            complete_set.append(relpath)
     i = 0
     while i <= len(complete_set):
         index = branch+i*branches
@@ -256,7 +260,7 @@ def main(arguments=None):
                  config.passwd,
                  config.db)
     # Begin file checking process
-    selected_set = par(path, branches, branch)
+    selected_set = par(branches, branch, config.path_receiving)
     for file in selected_set:
         rawfile = file
         file = os.path.join(path, file)
@@ -285,6 +289,10 @@ def main(arguments=None):
                 except:
                     pass
         else:  # New file
+            # Create new directory to processing
+            if os.path.dirname(rawfile):
+                if not os.path.exists(os.path.join(config.path_processing, os.path.dirname(rawfile))):
+                    os.mkdir(os.path.join(config.path_processing, os.path.dirname(rawfile)))
             db_insert_new_file(file, db)
             # put timestamp to dataset_log table
             dataset_id = lookup_dataset_id(db, file)
