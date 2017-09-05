@@ -22,20 +22,24 @@ def get_conf(path_to_config):
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
-def par(directory, branches, branch):
+def par(branches, branch, pathr):
     """
     This function reads a directory and generates a list
     of files to be checked by a single parallel process
     
-    :directory:  target directory to be sorted
     :branches:  number of branches to be run
     :branch:  id of branch
+    :pathr:  path_receiving from config.ini
     """
     complete_set = []  # to be appended
     selected_set = []  # to be appended
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(pathr):
         for item in files:
-            complete_set.append(os.path.join(root, item))
+            # form full path
+            fullpath = os.path.join(root, item)
+            # strip path (to leave subdirs if they exist)
+            relpath = fullpath.replace(pathr, '')
+            complete_set.append(relpath)
     i = 0
     while i <= len(complete_set):
         index = branch+i*branches
