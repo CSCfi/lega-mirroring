@@ -6,7 +6,12 @@ import os
 from configparser import ConfigParser
 from collections import namedtuple
 
-''' dsin.py Dataset Input '''
+'''
+    # dsin.py Dataset Input #
+    
+    This script is used to input metadata to dev_ega_downloader tables
+    file, filedataset and dataset_log from external (non-EGA format) sources.
+'''
 
 
 def get_conf(path_to_config):
