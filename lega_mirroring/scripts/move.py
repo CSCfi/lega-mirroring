@@ -42,9 +42,6 @@ def move(file, md5, dest, pathp):
         basemd5 = md5.replace(pathp, '')
         os.rename(file, os.path.join(dest, basefile))
         os.rename(md5, os.path.join(dest, basemd5))
-        '''
-        FILE REMOVAL DISABLED FOR PORIN TESTING
-        
         # Remove up to two extensions
         basefile, extension = os.path.splitext(file)  # .bam.cip -> .bam or .bam -> ''
         basefile, extension = os.path.splitext(basefile)  # .bam -> '' or '' -> '' (precaution)
@@ -53,7 +50,6 @@ def move(file, md5, dest, pathp):
             os.remove(os.path.join(pathp, basefile + '.cip'))  # rm .bam.cip
         except:
             pass
-        '''
     except:
         pass
     log_event(file, dest)
