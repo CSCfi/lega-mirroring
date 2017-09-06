@@ -38,33 +38,4 @@ This directory contains other related files, for example, the database creation 
 ## How to install
 Clone a copy of this repository using ```git clone https://github.com/CSCfi/lega-mirroring```. Then run the setup in command prompt
 with ```sudo python3 setup.py install``` (use python 3.4). The scripts are now installed. Install dependencies by typing `sudo pip3.4 install -r requirements.txt` to install required python libraries. Next you must configure the scripts before they are ready to be used.
-You can change certain variable values in config.ini, which will be used by the scripts.
-
-```
-[database]
-host=<localhost or url to your mysql server>
-user=<login username to database>
-passwd=<login password to database>
-db=<working database directory>
-```
-Example:
-```
-[database]
-host=localhost
-user=root
-passwd=root
-db=lega
-```
-Other config.ini variables:
-```
-[func_conf]
-chunk_size=<int value>  #chunk size in bytes used in hashing
-age_limit=<int value>  #number of seconds until monitor starts to accumulate passes
-pass_limit=<int value>  #number of passes until monitor attempts to verify file
-res_url=<url>  #url to an active res microservice
-[workspaces]
-receiving=<path>  #path to gridftp endpoint (receiving directory, workflow1)
-processing=<path>  #path to processing directory (workflow2)
-end_storage=<path>  #path to final file archive
-```
-Example: values are already set in [config.ini](https://github.com/CSCfi/lega-mirroring/blob/master/config.ini)
+You can change certain variable values in [config.ini](https://github.com/CSCfi/lega-mirroring/blob/master/config.ini), which will be used by the scripts. You may need to edit `PYTHONPATH` for the luigi workflows to work, e.g. `PYTHONPATH='.'`.
