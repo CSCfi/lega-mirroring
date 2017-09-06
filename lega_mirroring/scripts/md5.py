@@ -25,6 +25,7 @@ def get_conf(path_to_config):
     config = ConfigParser()
     config.read(path_to_config)
     conf = {'chunk_size': config.getint('func_conf', 'chunk_size'),
+            'extensions': config.get('func_conf', 'extensions'),
             'host': config.get('database', 'host'),
             'user': config.get('database', 'user'),
             'passwd': config.get('database', 'passwd'),
@@ -52,7 +53,7 @@ def db_init(hostname, username, password, database):
     return db
     
 
-def hash_md5_for_file(method, path, chunk_size):
+def hash_md5_for_file(method, path, chunk_size, ext):
     """ 
     This function reads a file and returns a generated md5 checksum 
     
@@ -70,6 +71,9 @@ def hash_md5_for_file(method, path, chunk_size):
                 hash_md5.update(chunk)
             md5 = hash_md5.hexdigest()
             if method == 'hash':
+                if not path.endswith(ext):
+                    # if path is file.bam, add .cip.csc to it
+                    path = path + '.cip.csc'
                 with open(path + '.md5', 'w') as fmd5:
                     fmd5.write(md5)
     else:
@@ -115,6 +119,7 @@ def main(arguments=None):
     """
     args = parse_arguments(arguments) 
     config = get_conf(args.config)
+    ext = tuple(config.extensions.split(','))
     # Establish database connection
     db = db_init(config.host,
                  config.user,
@@ -123,7 +128,7 @@ def main(arguments=None):
     retval = False
     # Generate md5 hash and save to file.md5
     if args.method == 'hash':
-        md5 = hash_md5_for_file(args.method, args.path, config.chunk_size)
+        md5 = hash_md5_for_file(args.method, args.path, config.chunk_size, ext)
         retval = md5  # always true if path exists
         if md5:
             logging.info('Created md5 hash for ' + args.path + ' (' + md5 + ')')
@@ -131,7 +136,7 @@ def main(arguments=None):
             logging.info('Error creating md5 hash for ' + args.path + ', file not found.')
     # Read md5 checksum from database and compare it to hashed value
     elif args.method == 'check':
-        md5 = hash_md5_for_file(args.method, args.path, config.chunk_size)
+        md5 = hash_md5_for_file(args.method, args.path, config.chunk_size, ext)
         key_md5 = db_fetch_md5(db, args.path, config.path_gridftp, config.path_processing)
         retval = (md5 == key_md5)  # true if checksums match
         if md5 == key_md5:

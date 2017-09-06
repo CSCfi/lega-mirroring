@@ -145,7 +145,7 @@ class ArchiveFile(luigi.Task):
             cscmd5 = base + '.cip.csc.md5'
         else:  # .bam
             cscfile = self.file + '.cip.csc'
-            cscmd5 = self.file + 'cip.csc.md5'
+            cscmd5 = self.file + '.cip.csc.md5'
         lega_mirroring.scripts.move.main([cscfile, cscmd5, self.config])
         with self.output().open('w') as fd:
             fd.write(str(cscfile + '\n' + cscmd5))
