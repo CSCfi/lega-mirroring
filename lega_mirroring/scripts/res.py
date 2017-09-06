@@ -136,8 +136,6 @@ def main(arguments=None):
             write_to_file(method, decrypt(config.res_url, path), config.chunk_size, path)
         elif path.endswith('.bam'):
             print('Can\'t decrypt .bam file, already plain text. Step skipped.')
-        else:
-            print('Can\'t decrypt file type: ' + str(path))
     elif method == 'encrypt':
         write_to_file(method, encrypt(config.res_url, path), config.chunk_size, path)
     else:

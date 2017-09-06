@@ -64,7 +64,7 @@ class Launch(luigi.Task):
     def requires(self):
         conf = get_conf(self.config)
         path = conf.path_processing
-        selected_set = par(path, self.branches, self.branch)
+        selected_set = par(int(self.branches), int(self.branch), path)
         for filename in selected_set:
             filepath = os.path.join(path, filename)
             yield UpdateFileStatus(file=filepath, config=self.config)

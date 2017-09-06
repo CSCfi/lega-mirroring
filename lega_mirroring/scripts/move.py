@@ -22,29 +22,37 @@ def get_conf(path_to_config):
     """
     config = ConfigParser()
     config.read(path_to_config)
-    conf = {'end_storage': config.get('workspaces', 'end_storage')}
+    conf = {'end_storage': config.get('workspaces', 'end_storage'),
+            'path_processing': config.get('workspaces', 'processing')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
 
-def move(file, md5, dest):
+def move(file, md5, dest, pathp):
     """ 
     This function moves files from current directory to another directory
-    atomically
+    atomically, and removes the original working files
     
     :file: file that will be moved
     :md5: associated md5-file that will be moved
     :dest: destination directory
     """
     try:
-        os.rename(file, os.path.join(dest, os.path.basename(file)))
-        os.rename(md5, os.path.join(dest, os.path.basename(md5)))
-        filebase = file.replace('.cip.csc', '')
+        basefile = file.replace(pathp, '')
+        basemd5 = md5.replace(pathp, '')
+        os.rename(file, os.path.join(dest, basefile))
+        os.rename(md5, os.path.join(dest, basemd5))
+        ''' 
+        REMOVED FOR PORIN TESTS
+        # Remove up to two extensions
+        basefile, extension = os.path.splitext(file)  # .bam.cip -> .bam or .bam -> ''
+        basefile, extension = os.path.splitext(basefile)  # .bam -> '' or '' -> '' (precaution)
         try:
-            os.remove(filebase)  # rm .bam
-            os.remove(filebase + '.cip')  # rm .bam.cip
+            os.remove(basefile + '.bam')  # rm .bam
+            os.remove(basefile + '.bam.cip')  # rm .bam.cip
         except:
             pass
+        '''
     except:
         pass
     log_event(file, dest)
@@ -76,7 +84,7 @@ def main(arguments=None):
     args = parse_arguments(arguments)
     conf = args.path_to_config
     config = get_conf(conf)
-    move(args.file, args.md5, config.end_storage)
+    move(args.file, args.md5, config.end_storage, config.path_processing)
     return
 
 

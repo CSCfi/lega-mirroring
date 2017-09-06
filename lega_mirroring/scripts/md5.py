@@ -29,7 +29,8 @@ def get_conf(path_to_config):
             'user': config.get('database', 'user'),
             'passwd': config.get('database', 'passwd'),
             'db': config.get('database', 'db'),
-            'path_gridftp': config.get('workspaces', 'receiving')}
+            'path_gridftp': config.get('workspaces', 'receiving'),
+            'path_processing': config.get('workspaces', 'processing')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
@@ -76,7 +77,7 @@ def hash_md5_for_file(method, path, chunk_size):
     return md5
 
 
-def db_fetch_md5(db, path_file, path_gridftp):
+def db_fetch_md5(db, path_file, path_gridftp, path_processing):
     """
     This function queries the database for an md5 hash matching
     the given filename and returns it
@@ -86,7 +87,8 @@ def db_fetch_md5(db, path_file, path_gridftp):
     :path_gridftp: path to receiving folder, needed for db query
     """
     # fix path to match that in db
-    filename = os.path.join(path_gridftp, os.path.basename(path_file))
+    #filename = os.path.join(path_gridftp, os.path.basename(path_file))
+    filename = path_file.replace(path_processing, path_gridftp)
     md5 = False
     cur = db.cursor()
     cur.execute('SELECT file_md5 '
@@ -130,7 +132,7 @@ def main(arguments=None):
     # Read md5 checksum from database and compare it to hashed value
     elif args.method == 'check':
         md5 = hash_md5_for_file(args.method, args.path, config.chunk_size)
-        key_md5 = db_fetch_md5(db, args.path, config.path_gridftp)
+        key_md5 = db_fetch_md5(db, args.path, config.path_gridftp, config.path_processing)
         retval = (md5 == key_md5)  # true if checksums match
         if md5 == key_md5:
             logging.info('OK (md5 checksums match)'

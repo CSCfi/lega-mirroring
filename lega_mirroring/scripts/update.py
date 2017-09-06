@@ -130,7 +130,7 @@ def parse_arguments(arguments):
     
     :path: path to file that\'s details are updated 
     :config: full path to config.ini (or just config.ini if
-                     cwd: lega-mirroring)
+             cwd: lega-mirroring)
     """
     parser = argparse.ArgumentParser(description='Update file status '
                                      'and path')
