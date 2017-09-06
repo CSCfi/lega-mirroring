@@ -10,9 +10,9 @@ Genomic datasets are received in gridftp-endpoint that is supervised by Transfer
 When TransferTracking.py has determined that a file has finished downloading, it will move them to processing. The processing directory
 is supervised by ProcessMaster.py (luigi workflow that generates child workflows). ProcessMaster.py launches a number of TransferProcessing.py workflows (luigi workflow that is running md5.py, res.py, move.py and update.py). This workflow handles the files
 as presented in the picture. Processed files are moved to final-archive.
-![Picture](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualized.png)
+![Picture](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualised.png)
 
-Click [here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualized.png?raw=true) to open full picture.
+Click [here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualised.png?raw=true) to open full picture.
 
 ##### Local EGA Demo Video
 Here is a short (1 minute) animation visualizing the process. (NOTE: animation is outdated; .md5 files are no longer utilized, the process looks the same however. The only difference is that md5 hashes are fetched from a database).
