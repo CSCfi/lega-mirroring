@@ -42,17 +42,14 @@ def move(file, md5, dest, pathp):
         basemd5 = md5.replace(pathp, '')
         os.rename(file, os.path.join(dest, basefile))
         os.rename(md5, os.path.join(dest, basemd5))
-        ''' 
-        REMOVED FOR PORIN TESTS
         # Remove up to two extensions
         basefile, extension = os.path.splitext(file)  # .bam.cip -> .bam or .bam -> ''
         basefile, extension = os.path.splitext(basefile)  # .bam -> '' or '' -> '' (precaution)
         try:
-            os.remove(basefile + '.bam')  # rm .bam
-            os.remove(basefile + '.bam.cip')  # rm .bam.cip
+            os.remove(os.path.join(pathp, basefile))  # rm .bam
+            os.remove(os.path.join(pathp, basefile + '.cip'))  # rm .bam.cip
         except:
             pass
-        '''
     except:
         pass
     log_event(file, dest)
