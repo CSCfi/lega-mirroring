@@ -9,7 +9,7 @@ import argparse
 import logging
 from configparser import ConfigParser
 from collections import namedtuple
-import lega_mirroring.scripts.logger
+import lega_mirroring.scripts.datasetlogger
 
 # Log events to file
 logging.basicConfig(filename='monitor_log.log',
@@ -285,7 +285,7 @@ def main(arguments=None):
                     os.rename(file, os.path.join(config.path_processing, rawfile))
                     # put timestamp to dataset_log table
                     dataset_id = lookup_dataset_id(db, file)
-                    lega_mirroring.scripts.logger.main(['date_download_end', dataset_id, conf])
+                    lega_mirroring.scripts.datasetlogger.main(['date_download_end', dataset_id, conf])
                 except:
                     pass
         else:  # New file
@@ -296,7 +296,7 @@ def main(arguments=None):
             db_insert_new_file(file, db)
             # put timestamp to dataset_log table
             dataset_id = lookup_dataset_id(db, file)
-            lega_mirroring.scripts.logger.main(['date_download_start', dataset_id, conf])
+            lega_mirroring.scripts.datasetlogger.main(['date_download_start', dataset_id, conf])
             log_event(file, db)
     return ('Runtime: ' + str(time.time()-start_time) + ' seconds')
 

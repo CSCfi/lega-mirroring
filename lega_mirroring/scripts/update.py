@@ -6,7 +6,7 @@ import logging
 import os
 from configparser import ConfigParser
 from collections import namedtuple
-import lega_mirroring.scripts.logger
+import lega_mirroring.scripts.datasetlogger
 
 logging.basicConfig(filename='update_log.log',
                     format='%(asctime)s %(message)s',
@@ -120,7 +120,7 @@ def main(arguments=None):
     # put timestamp to dataset_log table
     file = os.path.join(config.path_archive, args.path)
     dataset_id = lookup_dataset_id(db, file)
-    lega_mirroring.scripts.logger.main(['date_processing_end', dataset_id, conf])
+    lega_mirroring.scripts.datasetlogger.main(['date_processing_end', dataset_id, conf])
     return
 
 
