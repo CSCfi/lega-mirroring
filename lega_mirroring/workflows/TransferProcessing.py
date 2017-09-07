@@ -106,14 +106,11 @@ class CreateHashForEncryptedFile(luigi.Task):
         return EncryptVerifiedFile(file=self.file, config=self.config)
 
     def run(self):
-        conf = get_conf(self.config)
-        ext = tuple(conf.extensions.split(','))
-        filename_encr = self.file + '.cip.csc'  # .bam
-        if self.file.endswith(ext):
-            base, extension =  os.path.splitext(self.file)  # remove extension
-            filename_encr = base + '.cip.csc'
-        filename_encr = self.file.replace('.cip', '.cip.csc')
-        lega_mirroring.scripts.md5.main(['hash', filename_encr, self.config])
+        # self.file = .bam or .bam.cip
+        base, exte = os.path.splitext(self.file)  # .bam.cip -> .bam or .bam -> ''
+        base, exte = os.path.splitext(base)  # .bam -> '' (precaution)
+        filename = base + '.bam'  # put it back to be sure it's .bam
+        lega_mirroring.scripts.md5.main(['hash', filename, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
         return
