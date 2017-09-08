@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.4
 import requests
 import sys
+import os
 import argparse
 import logging
 from configparser import ConfigParser
@@ -23,7 +24,8 @@ def get_conf(path_to_config):
     config = ConfigParser()
     config.read(path_to_config)
     conf = {'chunk_size': config.getint('func_conf', 'chunk_size'),
-            'res_url': config.get('func_conf', 'res_url')}
+            'res_url': config.get('func_conf', 'res_url'),
+            'extensions': config.get('func_conf', 'extensions')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
@@ -65,7 +67,7 @@ def encrypt(host_url, file_path):
     return r
 
 
-def write_to_file(crypt, feed, chnk, path):
+def write_to_file(crypt, feed, chnk, path, ext):
     """ 
     This function handles a stream of data and writes
     it to file. The function determines the file extension
@@ -77,10 +79,9 @@ def write_to_file(crypt, feed, chnk, path):
     :path: full path to destination file
     """
     if crypt == 'decrypt':
-        if path.endswith('.cip'):
-            newpath = path.replace('.cip', '')
-        elif path.endswith('.gpg'):
-            newpath = path.replace('.gpg', '')
+        newpath = path  # .bam
+        if path.endswith(tuple(ext)):
+            newpath, extension = os.path.splitext(path)
         with open(newpath, 'wb+') as f:
             for chunk in feed.iter_content(chunk_size=chnk):
                 if chunk:
@@ -130,14 +131,15 @@ def main(arguments=None):
     path = args.path
     conf = args.config
     config = get_conf(conf)
+    ext = tuple(config.extensions.split(','))
     if method == 'decrypt':
         ext = ['.cip', '.gpg']  # allowed extensions
         if path.endswith(tuple(ext)):
-            write_to_file(method, decrypt(config.res_url, path), config.chunk_size, path)
+            write_to_file(method, decrypt(config.res_url, path), config.chunk_size, path, ext)
         elif path.endswith('.bam'):
             print('Can\'t decrypt .bam file, already plain text. Step skipped.')
     elif method == 'encrypt':
-        write_to_file(method, encrypt(config.res_url, path), config.chunk_size, path)
+        write_to_file(method, encrypt(config.res_url, path), config.chunk_size, path, ext)
     else:
         raise Exception('invalid method, must be \'encrypt\' or \'decrypt\'')
     return
