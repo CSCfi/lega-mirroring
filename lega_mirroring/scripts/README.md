@@ -54,3 +54,7 @@ Example checksumming:
 `update.py` is used to update file status and path in `dev_ega_downloader.file`. This script can be run from command line by typing
 `update <file_basename_in_db> <path/config.ini>` for example `update file.bam config.ini`. The script updates file.bam's status from pending
 to available, and fixes the path from `receiving` to `end-storage`
+
+- - - -
+##### datasetlogger.py
+This script is embedded within other scripts and is used to add timestamps to database table dataset_log on key process points: (1) dataset requested, (2) download started, (3) download ended (processing started), (4) processing ended.
