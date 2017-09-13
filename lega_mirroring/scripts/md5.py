@@ -1,5 +1,5 @@
 #!/usr/bin/env python3.4
-import MySQLdb
+import pymysql
 import sys
 import argparse
 import logging
@@ -46,7 +46,7 @@ def db_init(hostname, username, password, database):
     :password: password associated with :username: to log in to mysql server
     :database: database to be worked on
     """
-    db = MySQLdb.connect(host=hostname,
+    db = pymysql.connect(host=hostname,
                          user=username,
                          passwd=password,
                          db=database)
@@ -141,12 +141,12 @@ def main(arguments=None):
         retval = (md5 == key_md5)  # true if checksums match
         if md5 == key_md5:
             logging.info('OK (md5 checksums match)'
-                         ' From: ' + args.path +
+                         ' File: ' + args.path +
                          ' Hashed md5: ' + md5 +
                          ' Received md5: ' + str(key_md5))
         else:
             logging.info('ERROR (md5 checksums don\'t match)'
-                         ' From: ' + args.path +
+                         ' File: ' + args.path +
                          ' Hashed md5: ' + md5 +
                          ' Received md5: ' + str(key_md5))
     else:

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.4
-import MySQLdb
+#import MySQLdb
+import pymysql
 import os
 import time
 import datetime
@@ -51,7 +52,8 @@ def db_init(hostname, username, password, database):
     :password: password associated with :username: to log in to mysql server
     :database: database to be worked on
     """
-    db = MySQLdb.connect(host=hostname,
+    #db = MySQLdb.connect(host=hostname,
+    db = pymysql.connect(host=hostname,
                          user=username,
                          passwd=password,
                          db=database)
