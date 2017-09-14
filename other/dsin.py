@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.4
-import MySQLdb
+
+import pymysql
 import sys
 import argparse
 import os
@@ -27,7 +28,8 @@ def get_conf(path_to_config):
     conf = {'host': config.get('database', 'host'),
             'user': config.get('database', 'user'),
             'passwd': config.get('database', 'passwd'),
-            'db': config.get('database', 'db')}
+            'db': config.get('database', 'db'),
+            'path_incoming': config.get('workspaces', 'receiving')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
@@ -42,7 +44,7 @@ def db_init(hostname, username, password, database):
     :password: password associated with :username: to log in to mysql server
     :database: database to be worked on
     """
-    db = MySQLdb.connect(host=hostname,
+    db = pymysql.connect(host=hostname,
                          user=username,
                          passwd=password,
                          db=database)
@@ -61,7 +63,7 @@ def parse_file(file):
     return rows
     
     
-def db_insert_metadata(db, dataset_id, metadata):
+def db_insert_metadata(db, dataset_id, metadata, path_incoming):
     """
     This function inserts received data to database
     
@@ -73,6 +75,7 @@ def db_insert_metadata(db, dataset_id, metadata):
     for i in range(len(metadata)):
         file_id = metadata[i][0].replace('.bam', '')
         file_name = metadata[i][0]
+        file_name = os.path.join(path_incoming, file_name)
         file_md5 = metadata[i][1]
         params_file = [file_id, file_name, file_md5]
         params_data = [dataset_id, file_id]
@@ -115,7 +118,7 @@ def main(arguments=None):
     dataset_id = args.metafile.replace('.txt', '')
     metafile = parse_file(args.metafile)
     db_date_requested(db, dataset_id)
-    db_insert_metadata(db, dataset_id, metafile)
+    db_insert_metadata(db, dataset_id, metafile, config.path_incoming)
     return
 
 

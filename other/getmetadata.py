@@ -26,7 +26,8 @@ def get_conf(path_to_config):
             'api_url': config.get('api', 'api_url'),
             'api_user': config.get('api', 'api_user'),
             'api_pass': config.get('api', 'api_pass'),
-            'path_gridftp': config.get('workspaces', 'receiving')}
+            'path_gridftp': config.get('workspaces', 'receiving'),
+            'extensions': config.get('func_conf', 'extensions')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
@@ -72,7 +73,7 @@ def request_dataset_metadata(api_url, api_user, api_pass, did):
     return metadata.json()
 
 
-def db_insert_metadata(db, metadata, did, path_gridftp):
+def db_insert_metadata(db, metadata, did, path_gridftp, ext):
     '''
     This function takes a stream of metadata as input
     and inserts it into database
@@ -81,6 +82,7 @@ def db_insert_metadata(db, metadata, did, path_gridftp):
     :metadata: stream of metadata from EGA API
     :did: dataset id
     :path_gridftp: path to receiving directory
+    :ext: crypto-extensions
     '''
     cur = db.cursor()
     n_bytes = 0
@@ -88,6 +90,9 @@ def db_insert_metadata(db, metadata, did, path_gridftp):
     for i in range(len(metadata)):
         filename = os.path.basename(metadata[i]['fileName'])
         filename = os.path.join(path_gridftp, filename)
+        # Removes crypto-extension if it exists
+        if filename.endswith(ext):
+            filename, extension = os.path.splitext(filename)
         n_files += 1
         n_bytes += int(metadata[i]['fileSize'])
         params_file = [metadata[i]['fileId'], filename,
@@ -119,9 +124,10 @@ def main(arguments=None):
                  config.user,
                  config.passwd,
                  config.db)
+    ext = tuple(config.extensions.split(','))
     metadata = request_dataset_metadata(config.api_url, config.api_user,
                                         config.api_pass, args.dataset)
-    db_insert_metadata(db, metadata, args.dataset, config.path_gridftp)
+    db_insert_metadata(db, metadata, args.dataset, config.path_gridftp, ext)
     return
 
 

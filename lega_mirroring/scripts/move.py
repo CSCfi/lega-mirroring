@@ -43,8 +43,11 @@ def move(file, md5, dest, pathp):
         os.rename(file, os.path.join(dest, basefile))
         os.rename(md5, os.path.join(dest, basemd5))
         # Remove up to two extensions
-        basefile, extension = os.path.splitext(file)  # .bam.cip -> .bam or .bam -> ''
-        basefile, extension = os.path.splitext(basefile)  # .bam -> '' or '' -> '' (precaution)
+        #
+        # THIS NEEDS SOME THINKING AND TESTING
+        #                                     was (file)
+        basefile, extension = os.path.splitext(basefile)
+        basefile, extension = os.path.splitext(basefile)
         try:
             os.remove(os.path.join(pathp, basefile))  # rm .bam
             os.remove(os.path.join(pathp, basefile + '.cip'))  # rm .bam.cip

@@ -15,13 +15,15 @@ def step1(amount):
     start_time = time.time()
     for i in range(amount):
         f = open('/data/incoming/gridftp-endpoint/file' + str(i) + '.bam', 'w')
-        f.write(str(i) + 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-        'Aenean gravida ligula id semper maximus. Etiam sagittis, augue eget accumsan '
-        'posuere, tellus lectus ultrices mi, non dignissim nisl risus vel orci. Curabitur '
-        'consequat lorem mauris, eu efficitur felis ultrices bibendum. Fusce nec ipsum tincidunt, '
-        'varius diam in, venenatis odio. Vestibulum massa lectus, cursus vitae orci vitae, '
-        'fringilla tincidunt augue. Vivamus vel massa porta, maximus mauris sit amet, luctus risus. '
-        'Ut nulla nisi, finibus quis sapien id, viverra congue urna.')
+        for j in range(10000):  # increase range to create larger files
+            f.write(str(i) + 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+            'Aenean gravida ligula id semper maximus. Etiam sagittis, augue eget accumsan '
+            'posuere, tellus lectus ultrices mi, non dignissim nisl risus vel orci. Curabitur '
+            'consequat lorem mauris, eu efficitur felis ultrices bibendum. Fusce nec ipsum tincidunt, '
+            'varius diam in, venenatis odio. Vestibulum massa lectus, cursus vitae orci vitae, '
+            'fringilla tincidunt augue. Vivamus vel massa porta, maximus mauris sit amet, luctus risus. '
+            'Ut nulla nisi, finibus quis sapien id, viverra congue urna.')
+            j += 1
         i += 1
     print('Step [2/4]: generate .bam files, runtime: ' + str(time.time()-start_time)[:6] + 's')
     return

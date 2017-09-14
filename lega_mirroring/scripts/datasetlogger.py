@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.4
+import requests
 import pymysql
 import sys
 import argparse
@@ -22,7 +23,10 @@ def get_conf(path_to_config):
             'user': config.get('database', 'user'),
             'passwd': config.get('database', 'passwd'),
             'db': config.get('database', 'db'),
-            'path_metadata': config.get('workspaces', 'metadata')}
+            'path_metadata': config.get('workspaces', 'metadata'),
+            'api_url': config.get('api', 'api_url'),
+            'api_user': config.get('api', 'api_user'),
+            'api_pass': config.get('api', 'api_pass')}
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
@@ -45,6 +49,10 @@ def db_init(hostname, username, password, database):
 
 
 def read_json(jsonpath):
+    '''
+    This is for mockup ega api, it reads .json files
+    read_api() is the actual api request
+    '''
     metadata = 0
     n_files = 0
     n_bytes = 0
@@ -55,6 +63,27 @@ def read_json(jsonpath):
         n_bytes += metadata[i]['fileSize']
     return (n_files, n_bytes)
     
+''' MOVED TO getmetadata.py
+def read_api(api_url, api_user, api_pass, did):
+    metadata = 0
+    n_files = 0
+    n_bytes = 0
+    api_url = api_url.replace('DATASETID', did)
+    metadata = requests.get(api_url, 
+                            auth=(api_user, api_pass), 
+                            stream=True)
+    if not metadata:
+        raise Exception('\n\nAPI Error'
+                        '\napi_url=' + api_url +
+                        '\napi_user=' + api_user +
+                        '\napi_pass=' + api_pass +
+                        '\ndataset_id=' + did +
+                        '\n\n')
+    for i in range(len(metadata.json())):
+        n_files += 1
+        n_bytes += metadata[i]['fileSize']
+    return (n_files, n_bytes)
+'''
    
 def db_dataset_exists(db, dataset_id):
     exists = False
@@ -155,15 +184,21 @@ def main(arguments=None):
         else:
             print('Invalid method: ' + method + ' for dataset: ' + dataset_id)
     else:  # If not, create new entry
+        ''' MOVED TO getmetadata.py
         if method == 'date_requested':
+            n = read_api(config.api_url, config.api_user, 
+                         config.api_pass, dataset_id)
+            print(n)
+            db_date_requested(db, dataset_id, n)
+        '''
+        if method == 'date_requested_mockup':
+            # this is for mockup EGA API
+            # aka .json files in /metadata
             # put /path/ and .json to EGAD
             path = args.dataset_id + '.json'
             path = os.path.join(config.path_metadata, path)
             n = read_json(path)  # n_files and n_bytes
             db_date_requested(db, dataset_id, n)
-        else:
-            print('Error: ' + dataset_id + ' not in table, and wrong method:'
-                  ' ("' + method + '") used.')
     return
 
 
@@ -181,7 +216,8 @@ def parse_arguments(arguments):
     parser.add_argument('method',
                         help='determines which operation date is logged. '
                         '\nPossible values are: '
-                        '\ndate_requested '
+                        '\ndate_requested(DEPRECATED, now in getmetadata.py) '
+                        '\ndate_requested_mockup '
                         '\ndate_download_start '
                         '\ndate_download_end '
                         '\ndate_processing_end')

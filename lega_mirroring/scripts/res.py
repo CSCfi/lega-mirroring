@@ -87,7 +87,8 @@ def write_to_file(crypt, feed, chnk, path, ext):
                 if chunk:
                     f.write(chunk)
     elif crypt == 'encrypt':
-        newpath = path.replace('.bam', '.bam.cip.csc')
+        #newpath = path.replace('.bam', '.bam.cip.csc')
+        newpath = path + '.cip.csc'
         with open(newpath, 'wb+') as f:
             for chunk in feed.iter_content(chunk_size=chnk):
                 if chunk:
@@ -133,11 +134,7 @@ def main(arguments=None):
     config = get_conf(conf)
     ext = tuple(config.extensions.split(','))
     if method == 'decrypt':
-        ext = ['.cip', '.gpg']  # allowed extensions
-        if path.endswith(tuple(ext)):
-            write_to_file(method, decrypt(config.res_url, path), config.chunk_size, path, ext)
-        elif path.endswith('.bam'):
-            print('Can\'t decrypt .bam file, already plain text. Step skipped.')
+        write_to_file(method, decrypt(config.res_url, path), config.chunk_size, path, ext)
     elif method == 'encrypt':
         write_to_file(method, encrypt(config.res_url, path), config.chunk_size, path, ext)
     else:

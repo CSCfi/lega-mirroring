@@ -1,6 +1,5 @@
 #!/usr/bin/env python3.4
-#import requests
-import MySQLdb
+import pymysql
 import argparse
 from configparser import ConfigParser
 from collections import namedtuple
@@ -8,7 +7,7 @@ import sys
 import json
 import os
 import ntpath
-import lega_mirroring.scripts.logger
+import lega_mirroring.scripts.datasetlogger
 
 
 def get_conf(path_to_config):
@@ -40,7 +39,7 @@ def db_init(hostname, username, password, database):
     :password: password associated with :username: to log in to mysql server
     :database: database to be worked on
     """
-    db = MySQLdb.connect(host=hostname,
+    db = pymysql.connect(host=hostname,
                          user=username,
                          passwd=password,
                          db=database)
@@ -95,7 +94,9 @@ def main(arguments=None):
         # strip /path/ and .json to get EGAD
         dataset = ntpath.basename(file)
         dataset_id = dataset.replace('.json', '')
-        lega_mirroring.scripts.logger.main(['date_requested', dataset_id, conf])
+        lega_mirroring.scripts.datasetlogger.main(['date_requested_mockup', 
+                                                    dataset_id, 
+                                                    conf])
 
 
 def parse_arguments(arguments):
