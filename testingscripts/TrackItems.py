@@ -1,8 +1,23 @@
+#!/usr/bin/env python3.4
+
 import os
 import argparse
 import sys
 
-''' lega end-to-end test tool '''
+'''
+    # lega-mirroring end-to-end test tool #
+    
+    This script is used to track moved items.
+    python3 TrackItems.py start     # creates a list of files
+                                      in /gridftp-endpoint/
+    python3 TrackItems.py end       # creates a list of files
+                                      in /final-archive/
+    python3 TrackItems.py compare   # creates a list of differences
+                                      between start and end
+                                      
+    Note: This is a quick test tool with no configuration file,
+    so paths are hard coded.
+'''
 
 def write_gridftp():
     contents = os.listdir('/data/incoming/gridftp-endpoint/')

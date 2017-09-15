@@ -1,3 +1,7 @@
+# step 1 create .bam files
+# step 2 hash md5 values for files and save them to .json file
+# step 3 encrypt .bam files to .bam.cip, then remove .bam files
+
 import time
 import hashlib
 import os
@@ -7,15 +11,26 @@ import lega_mirroring.scripts.res
 import lega_mirroring.scripts.md5
 import random
 
-# step 1 create .bam files
-# step 2 hash md5 values for files and save them to .json file
-# step 3 encrypt .bam files to .bam.cip, then remove .bam files
+'''
+    # end-to-end test tool #
+    
+    This is a test tool that creates .bam.cip files
+    and .json metadata files.
+    
+    Note: There is no configuration file, paths are
+    hard coded.
+    
+    # step 1 create .bam files
+    # step 2 hash md5 values for files and save them to .json file
+    # step 3 encrypt .bam files to .bam.cip, then remove .bam files
+'''
+
 
 def step1(amount):
     start_time = time.time()
     for i in range(amount):
         f = open('/data/incoming/gridftp-endpoint/file' + str(i) + '.bam', 'w')
-        for j in range(10000):  # increase range to create larger files
+        for j in range(100000):  # increase range to create larger files
             f.write(str(i) + 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
             'Aenean gravida ligula id semper maximus. Etiam sagittis, augue eget accumsan '
             'posuere, tellus lectus ultrices mi, non dignissim nisl risus vel orci. Curabitur '

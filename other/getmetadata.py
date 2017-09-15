@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.4
+
 import requests
 import pymysql
 import argparse
@@ -50,7 +51,7 @@ def db_init(hostname, username, password, database):
 
 
 def request_dataset_metadata(api_url, api_user, api_pass, did):
-    '''
+    """
     This function does an HTTP request to EGA API to get
     dataset metadata and returns it as a stream
     
@@ -58,7 +59,7 @@ def request_dataset_metadata(api_url, api_user, api_pass, did):
     :api_user: username to access api
     :api_pass: password for :api_user:
     :did: dataset id
-    '''
+    """
     api_url = api_url.replace('DATASETID', did)
     metadata = requests.get(api_url, 
                             auth=(api_user, api_pass), 
@@ -74,7 +75,7 @@ def request_dataset_metadata(api_url, api_user, api_pass, did):
 
 
 def db_insert_metadata(db, metadata, did, path_gridftp, ext):
-    '''
+    """
     This function takes a stream of metadata as input
     and inserts it into database
     
@@ -83,16 +84,21 @@ def db_insert_metadata(db, metadata, did, path_gridftp, ext):
     :did: dataset id
     :path_gridftp: path to receiving directory
     :ext: crypto-extensions
-    '''
+    """
+    
     cur = db.cursor()
     n_bytes = 0
     n_files = 0
+    
     for i in range(len(metadata)):
+    
         filename = os.path.basename(metadata[i]['fileName'])
         filename = os.path.join(path_gridftp, filename)
+        
         # Removes crypto-extension if it exists
         if filename.endswith(ext):
             filename, extension = os.path.splitext(filename)
+            
         n_files += 1
         n_bytes += int(metadata[i]['fileSize'])
         params_file = [metadata[i]['fileId'], filename,
@@ -100,6 +106,7 @@ def db_insert_metadata(db, metadata, did, path_gridftp, ext):
                        'pending']
         params_data = [did, metadata[i]['fileId']]
         params_log = [did, n_files, n_bytes]
+        
         try:
             cur.execute('INSERT INTO file VALUES '
                         '(%s, %s, %s, %s, %s);', params_file)
@@ -109,7 +116,9 @@ def db_insert_metadata(db, metadata, did, path_gridftp, ext):
                         '(%s, %s, %s, NOW(), NULL, NULL, NULL);', params_log)
         except:
             pass
+            
         i += 1
+        
     db.commit()
     return
 
@@ -117,9 +126,7 @@ def db_insert_metadata(db, metadata, did, path_gridftp, ext):
 def main(arguments=None):
     args = parse_arguments(arguments)
     conf = args.config
-    #egad = args.dataset_id
     config = get_conf(conf)
-    # Establish DB connection
     db = db_init(config.host,
                  config.user,
                  config.passwd,

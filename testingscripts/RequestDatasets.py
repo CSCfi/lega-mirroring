@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.4
+
 import pymysql
 import argparse
 from configparser import ConfigParser
@@ -47,11 +48,12 @@ def db_init(hostname, username, password, database):
 
 
 def request_dataset_metadata(egad):
-    '''
-    proto: read file and return mock json
-    actual: http request using egad, receive json
-    #response = requests.get(url, egad)
-    '''
+    """
+    This function opens a .json file and reads the
+    values and returns them as a list
+    
+   :egad: dataset id
+    """
     # read dataset metadata from .json file
     with open(egad, encoding='utf-8') as metadata:
         values = json.loads(metadata.read())
@@ -59,6 +61,12 @@ def request_dataset_metadata(egad):
 
 
 def db_insert_metadata(db, metadata):
+    """
+    This function inserts given metadata to database
+    
+    :db: database connection object
+    :metadata: metadata read from .json file
+    """
     cur = db.cursor()
     for i in range(len(metadata)):
         params_file = [metadata[i]['fileId'], metadata[i]['fileName'],
