@@ -1,15 +1,13 @@
 # Luigi Workflow
-This module can be run using [luigi](https://github.com/spotify/luigi) workflow. Start the workflows by first starting a local luigi
-server by typing `luigid` in command prompt window. You can then view the workflows at your [local visualiser](http://localhost:8082) (example below).
+The scripts in this module can be run using [luigi](https://github.com/spotify/luigi) workflow. Start the workflows by first starting a local luigi server by typing `luigid` in command prompt window. You can then view the workflows at your [local visualiser](http://localhost:8082) (example below).
 
 
 ![Luigi Workflow Example](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/luigi_example.png)
 
-[Here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/luigi_example.png) is an example of what luigi visualizer looks like when running TransferProcessing.py. The pipeline is read from bottom to top.
+[Here](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/luigi_example.png) is an example of what luigi visualizer looks like when running ProcessMaster.py (several TransferProcessing.py:s). The pipeline is read from bottom to top. The process tree is launched with the top command "Launch". Green tasks are done, yellow ones are pending and blue task is currently being worked on. This example picture shows the data processing of 20 files, each file will be taken through 6 steps as described below.
 
 ## Workflow 1: TransferTracking
-Workflow 1 is used to periodically run the `monitor` script. See [README](https://github.com/CSCfi/lega-mirroring/blob/master/README.md)
-for operating principles.
+Workflow 1 is used to periodically run the `monitor` script. See [/scripts](https://github.com/CSCfi/lega-mirroring/tree/master/lega_mirroring/scripts) for operating principles.
 
 Workflow 1 can be run from command line (*cwd: lega-mirroring*) by typing:
 
@@ -23,7 +21,7 @@ would check files 1,5,9,13,17....branch+4\*n. This syntax is used to set up para
 values `--branches 1 --branch 1`.
 
 ## Workflow 2: TransferProcessing
-Workflow 2 is used to run all the other steps as described in [this diagram](https://github.com/CSCfi/lega-mirroring/blob/master/lega_mirroring/workflows/workflow.png).
+Workflow 2 is used to run all the other steps as described in [the overview picture](https://github.com/CSCfi/lega-mirroring/blob/master/lega_visualised.png).
 
 Workflow 2 can be run from command line (*cwd: lega-mirroring*) by typing:
 
