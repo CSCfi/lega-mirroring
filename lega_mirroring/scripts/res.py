@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.4
+
 import requests
 import sys
 import os
@@ -87,7 +88,6 @@ def write_to_file(crypt, feed, chnk, path, ext):
                 if chunk:
                     f.write(chunk)
     elif crypt == 'encrypt':
-        #newpath = path.replace('.bam', '.bam.cip.csc')
         newpath = path + '.cip.csc'
         with open(newpath, 'wb+') as f:
             for chunk in feed.iter_content(chunk_size=chnk):

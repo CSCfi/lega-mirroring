@@ -6,8 +6,6 @@ from collections import namedtuple
 import lega_mirroring.scripts.monitor
 from lega_mirroring.workflows.TransferProcessing import UpdateFileStatus
 
-# functions for luigi class 'Launch'
-
 def get_conf(path_to_config):
     """ 
     This function reads configuration variables from an external file

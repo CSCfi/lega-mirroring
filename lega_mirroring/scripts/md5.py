@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.4
+
 import pymysql
 import sys
 import argparse
@@ -90,8 +91,6 @@ def db_fetch_md5(db, path_file, path_gridftp, path_processing):
     :path_file: path to file to be checked
     :path_gridftp: path to receiving folder, needed for db query
     """
-    # fix path to match that in db
-    #filename = os.path.join(path_gridftp, os.path.basename(path_file))
     filename = path_file.replace(path_processing, path_gridftp)
     md5 = False
     cur = db.cursor()

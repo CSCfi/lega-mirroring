@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.4
+
 import requests
 import pymysql
 import sys
@@ -63,27 +64,6 @@ def read_json(jsonpath):
         n_bytes += metadata[i]['fileSize']
     return (n_files, n_bytes)
     
-''' MOVED TO getmetadata.py
-def read_api(api_url, api_user, api_pass, did):
-    metadata = 0
-    n_files = 0
-    n_bytes = 0
-    api_url = api_url.replace('DATASETID', did)
-    metadata = requests.get(api_url, 
-                            auth=(api_user, api_pass), 
-                            stream=True)
-    if not metadata:
-        raise Exception('\n\nAPI Error'
-                        '\napi_url=' + api_url +
-                        '\napi_user=' + api_user +
-                        '\napi_pass=' + api_pass +
-                        '\ndataset_id=' + did +
-                        '\n\n')
-    for i in range(len(metadata.json())):
-        n_files += 1
-        n_bytes += metadata[i]['fileSize']
-    return (n_files, n_bytes)
-'''
    
 def db_dataset_exists(db, dataset_id):
     exists = False
@@ -184,13 +164,6 @@ def main(arguments=None):
         else:
             print('Invalid method: ' + method + ' for dataset: ' + dataset_id)
     else:  # If not, create new entry
-        ''' MOVED TO getmetadata.py
-        if method == 'date_requested':
-            n = read_api(config.api_url, config.api_user, 
-                         config.api_pass, dataset_id)
-            print(n)
-            db_date_requested(db, dataset_id, n)
-        '''
         if method == 'date_requested_mockup':
             # this is for mockup EGA API
             # aka .json files in /metadata

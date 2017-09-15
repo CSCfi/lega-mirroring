@@ -34,7 +34,7 @@ class DecryptTransferredFile(luigi.Task):
     def run(self):
         conf = get_conf(self.config)
         ext = tuple(conf.extensions.split(','))
-        if self.file.endswith(ext):  # if file is encrypted, decrypt it
+        if self.file.endswith(ext):  # if file is crypted, decrypt it
             lega_mirroring.scripts.res.main(['decrypt', self.file, self.config])
         with self.output().open('w') as fd:
             fd.write(str(self.file))
