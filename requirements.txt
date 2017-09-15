@@ -1,5 +1,4 @@
-MySQLdb
+pymysql
 configparser
-ntpath
 requests
 luigi
