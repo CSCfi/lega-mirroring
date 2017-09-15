@@ -16,10 +16,10 @@ logging.basicConfig(filename='md5_log.log',
 
 
 def get_conf(path_to_config):
-    """ 
+    """
     This function reads configuration variables from an external file
-    and returns the configuration variables as a class object 
-    
+    and returns the configuration variables as a class object
+
     :path_to_config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """
@@ -36,12 +36,12 @@ def get_conf(path_to_config):
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
-    
+
 def db_init(hostname, username, password, database):
-    """ 
+    """
     This function initializes database connection and returns a connection
     object that will be used as an executale cursor object
-    
+
     :hostname: address of mysql server
     :username: username to log in to mysql server
     :password: password associated with :username: to log in to mysql server
@@ -52,12 +52,12 @@ def db_init(hostname, username, password, database):
                          passwd=password,
                          db=database)
     return db
-    
+
 
 def hash_md5_for_file(method, path, chunk_size, ext):
-    """ 
-    This function reads a file and returns a generated md5 checksum 
-    
+    """
+    This function reads a file and returns a generated md5 checksum
+
     :method: operating method given in main, hash or check
              hash: md5 is generated and written to .md5 file
              check: md5 is generated and returned
@@ -86,7 +86,7 @@ def db_fetch_md5(db, path_file, path_gridftp, path_processing):
     """
     This function queries the database for an md5 hash matching
     the given filename and returns it
-    
+
     :db: database connection object
     :path_file: path to file to be checked
     :path_gridftp: path to receiving folder, needed for db query
@@ -111,12 +111,12 @@ def db_fetch_md5(db, path_file, path_gridftp, path_processing):
 
 
 def main(arguments=None):
-    """ 
+    """
     This function runs the script
-    
+
     :arguments: contains parsed command line parameters
     """
-    args = parse_arguments(arguments) 
+    args = parse_arguments(arguments)
     config = get_conf(args.config)
     ext = tuple(config.extensions.split(','))
     # Establish database connection
@@ -130,13 +130,16 @@ def main(arguments=None):
         md5 = hash_md5_for_file(args.method, args.path, config.chunk_size, ext)
         retval = md5  # always true if path exists
         if md5:
-            logging.info('Created md5 hash for ' + args.path + ' (' + md5 + ')')
+            logging.info('Created md5 hash for ' + args.path +
+                         ' (' + md5 + ')')
         else:
-            logging.info('Error creating md5 hash for ' + args.path + ', file not found.')
+            logging.info('Error creating md5 hash for ' + args.path +
+                         ', file not found.')
     # Read md5 checksum from database and compare it to hashed value
     elif args.method == 'check':
         md5 = hash_md5_for_file(args.method, args.path, config.chunk_size, ext)
-        key_md5 = db_fetch_md5(db, args.path, config.path_gridftp, config.path_processing)
+        key_md5 = db_fetch_md5(db, args.path, config.path_gridftp,
+                               config.path_processing)
         retval = (md5 == key_md5)  # true if checksums match
         if md5 == key_md5:
             logging.info('OK (md5 checksums match)'
@@ -154,12 +157,12 @@ def main(arguments=None):
 
 
 def parse_arguments(arguments):
-    """ 
+    """
     This function parses command line inputs and returns them for main()
-    
+
     :method: parameter that determines the operation of the script
              either hash or check, can not be left empty
-    :path: path to file to be worked on 
+    :path: path to file to be worked on
     :config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """

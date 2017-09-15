@@ -20,10 +20,10 @@ logging.basicConfig(filename='monitor_log.log',
 
 
 def get_conf(path_to_config):
-    """ 
+    """
     This function reads configuration variables from an external file
-    and returns the configuration variables as a class object 
-    
+    and returns the configuration variables as a class object
+
     :path_to_config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """
@@ -43,10 +43,10 @@ def get_conf(path_to_config):
 
 
 def db_init(hostname, username, password, database):
-    """ 
+    """
     This function initializes database connection and returns a connection
     object that will be used as an executale cursor object
-    
+
     :hostname: address of mysql server
     :username: username to log in to mysql server
     :password: password associated with :username: to log in to mysql server
@@ -60,19 +60,19 @@ def db_init(hostname, username, password, database):
 
 
 def get_file_size(path):
-    """ 
-    This function reads a file and returns it's byte size as numeral string 
-    
+    """
+    This function reads a file and returns it's byte size as numeral string
+
     :path: file to be read
     """
     return os.path.getsize(path)
 
 
 def get_file_age(path):
-    """ 
+    """
     This function reads a file and returns it's last modified date as
     mtime(float) in string form
-    
+
     :path: file to be read
     """
     return os.path.getmtime(path)
@@ -89,7 +89,7 @@ def db_get_file_details(path, db):
     """
     This function queries the database for file details
     and returns a list of results or false
-    
+
     :path: filename to be queried
     :db: database connection object
     """
@@ -111,10 +111,10 @@ def db_get_file_details(path, db):
 
 
 def db_update_file_details(path, db):
-    """ 
+    """
     This function updates file size and age to database
     as well as resets the passes value to zero
-    
+
     :path: filename
     :db: database connection object
     """
@@ -134,9 +134,9 @@ def db_update_file_details(path, db):
 
 
 def db_increment_passes(path, db):
-    """ 
-    This function increments the number of passes by 1 
-    
+    """
+    This function increments the number of passes by 1
+
     :path: filename
     :db: database connection object
     """
@@ -153,9 +153,9 @@ def db_increment_passes(path, db):
 
 
 def db_insert_new_file(path, db):
-    """ 
+    """
     This function creates a new database entry of a new file
-    
+
     :path: filename
     :db: database connection object
     """
@@ -171,9 +171,9 @@ def db_insert_new_file(path, db):
 
 
 def log_event(path, db):
-    """ 
+    """
     This function prints monitoring events to log file
-    
+
     :path: filename
     :db: database connection object
     """
@@ -190,7 +190,7 @@ def par(branches, branch, pathr):
     """
     This function reads a directory and generates a list
     of files to be checked by a single parallel process
-    
+
     :branches:  number of branches to be run
     :branch:  id of branch
     :pathr:  path_receiving from config.ini
@@ -212,12 +212,12 @@ def par(branches, branch, pathr):
         i += 1
     return selected_set
 
-    
+
 def lookup_dataset_id(db, file):
     """
     This function finds the dataset id the given file
     belongs to and returns it as a string
-    
+
     :db: database connection object
     :file: datafile belonging to a dataset
     """
@@ -242,9 +242,9 @@ def lookup_dataset_id(db, file):
 
 
 def main(arguments=None):
-    """ 
+    """
     This function runs the script
-    
+
     :arguments: contains parsed command line parameters
     """
     start_time = time.time()
@@ -283,37 +283,42 @@ def main(arguments=None):
             else:
                 # move file from receiving(wf1) to processing(wf2)
                 try:
-                    os.rename(file, os.path.join(config.path_processing, rawfile))
+                    os.rename(file, os.path.join(config.path_processing,
+                              rawfile))
                     # put timestamp to dataset_log table
                     dataset_id = lookup_dataset_id(db, file)
-                    lega_mirroring.scripts.datasetlogger.main(['date_download_end', dataset_id, conf])
+                    lega_mirroring.scripts.datasetlogger.main(
+                        ['date_download_end', dataset_id, conf])
                 except:
                     pass
         else:  # New file
             # Create new directory to processing
             if os.path.dirname(rawfile):
-                if not os.path.exists(os.path.join(config.path_processing, os.path.dirname(rawfile))):
-                    os.mkdir(os.path.join(config.path_processing, os.path.dirname(rawfile)))
+                if not os.path.exists(os.path.join(config.path_processing,
+                                                   os.path.dirname(rawfile))):
+                    os.mkdir(os.path.join(config.path_processing,
+                                          os.path.dirname(rawfile)))
             db_insert_new_file(file, db)
             # put timestamp to dataset_log table
             dataset_id = lookup_dataset_id(db, file)
-            lega_mirroring.scripts.datasetlogger.main(['date_download_start', dataset_id, conf])
+            lega_mirroring.scripts.datasetlogger.main(['date_download_start',
+                                                       dataset_id, conf])
             log_event(file, db)
     return ('Runtime: ' + str(time.time()-start_time) + ' seconds')
 
 
 def parse_arguments(arguments):
-    """ 
+    """
     This function parses command line inputs and returns them for main()
-    
+
     :branches: this is the total number of parallelizations to be run
     :branch: this is a fraction of the parallelizations, e.g. 1 of 4
     :config: full path to config.ini (or just config.ini if
              cwd: lega-mirroring)
     """
     parser = argparse.ArgumentParser(description='Check files\' age and size'
-                                     ' in target directory and track them using'
-                                     ' a MySQL database.')
+                                     ' in target directory and track them '
+                                     ' using a MySQL database.')
     parser.add_argument('branches',
                         help='number of parallelizations')
     parser.add_argument('branch',

@@ -14,10 +14,10 @@ logging.basicConfig(filename='move_log.log',
 
 
 def get_conf(path_to_config):
-    """ 
+    """
     This function reads configuration variables from an external file
-    and returns the configuration variables as a class object 
-    
+    and returns the configuration variables as a class object
+
     :path_to_config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """
@@ -30,10 +30,10 @@ def get_conf(path_to_config):
 
 
 def move(file, md5, dest, pathp):
-    """ 
+    """
     This function moves files from current directory to another directory
     atomically, and removes the original working files
-    
+
     :file: file that will be moved
     :md5: associated md5-file that will be moved
     :dest: destination directory
@@ -61,9 +61,9 @@ def move(file, md5, dest, pathp):
 
 
 def log_event(file, dest):
-    """ 
-    This function logs moving events 
-    
+    """
+    This function logs moving events
+
     :file: file that was moved
     :dest: destination directory of file
     """
@@ -77,9 +77,9 @@ def log_event(file, dest):
 
 
 def main(arguments=None):
-    """ 
+    """
     This function runs the script
-    
+
     :arguments: contains parsed command line parameters
     """
     args = parse_arguments(arguments)
@@ -90,9 +90,9 @@ def main(arguments=None):
 
 
 def parse_arguments(arguments):
-    """ 
+    """
     This function parses command line inputs and returns them for main()
-    
+
     :file: file.bam.cip.csc that will be moved final-archive
     :md5: file.bam.cip.csc.md5 that will be moved to final-archive
     """

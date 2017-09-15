@@ -6,11 +6,12 @@ from collections import namedtuple
 import lega_mirroring.scripts.monitor
 from lega_mirroring.workflows.TransferProcessing import UpdateFileStatus
 
+
 def get_conf(path_to_config):
-    """ 
+    """
     This function reads configuration variables from an external file
-    and returns the configuration variables as a class object 
-    
+    and returns the configuration variables as a class object
+
     :path_to_config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """
@@ -20,11 +21,12 @@ def get_conf(path_to_config):
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
+
 def par(branches, branch, pathr):
     """
     This function reads a directory and generates a list
     of files to be checked by a single parallel process
-    
+
     :branches:  number of branches to be run
     :branch:  id of branch
     :pathr:  path_receiving from config.ini
@@ -48,9 +50,10 @@ def par(branches, branch, pathr):
 
 # luigi starts from here
 
+
 class Launch(luigi.Task):
     # Luigi class for starting TransferProcessing WORKFLOW
-    
+
     # Remove output folder if it exists
     if os.path.exists('output'):
         shutil.rmtree('output')
@@ -58,7 +61,7 @@ class Launch(luigi.Task):
     branches = luigi.Parameter()
     branch = luigi.Parameter()
     config = luigi.Parameter()
-    
+
     def requires(self):
         conf = get_conf(self.config)
         path = conf.path_processing

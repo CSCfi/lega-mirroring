@@ -11,10 +11,10 @@ from collections import namedtuple
 
 
 def get_conf(path_to_config):
-    """ 
+    """
     This function reads configuration variables from an external file
-    and returns the configuration variables as a class object 
-    
+    and returns the configuration variables as a class object
+
     :path_to_config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """
@@ -31,12 +31,12 @@ def get_conf(path_to_config):
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
-    
+
 def db_init(hostname, username, password, database):
-    """ 
+    """
     This function initializes database connection and returns a connection
     object that will be used as an executale cursor object
-    
+
     :hostname: address of mysql server
     :username: username to log in to mysql server
     :password: password associated with :username: to log in to mysql server
@@ -63,8 +63,8 @@ def read_json(jsonpath):
         n_files += 1
         n_bytes += metadata[i]['fileSize']
     return (n_files, n_bytes)
-    
-   
+
+
 def db_dataset_exists(db, dataset_id):
     exists = False
     cur = db.cursor()
@@ -77,7 +77,7 @@ def db_dataset_exists(db, dataset_id):
         exists = True
     return exists
 
-   
+
 def db_date_requested(db, dataset_id, n):
     cur = db.cursor()
     n_files = n[0]
@@ -88,8 +88,8 @@ def db_date_requested(db, dataset_id, n):
                 params)
     db.commit()
     return
-    
-    
+
+
 def db_date_download_start(db, dataset_id):
     cur = db.cursor()
     cur.execute('UPDATE dataset_log '
@@ -99,7 +99,7 @@ def db_date_download_start(db, dataset_id):
     db.commit()
     return
 
-    
+
 def db_date_download_end(db, dataset_id):
     cur = db.cursor()
     cur.execute('UPDATE dataset_log '
@@ -108,8 +108,8 @@ def db_date_download_end(db, dataset_id):
                 [dataset_id])
     db.commit()
     return
-    
-    
+
+
 def db_date_processing_end(db, dataset_id):
     cur = db.cursor()
     cur.execute('UPDATE dataset_log '
@@ -118,8 +118,8 @@ def db_date_processing_end(db, dataset_id):
                 [dataset_id])
     db.commit()
     return
-    
-    
+
+
 def db_date_is_null(db, dataset_id):
     status = False
     cur = db.cursor()
@@ -135,11 +135,11 @@ def db_date_is_null(db, dataset_id):
                 status = True
     return status
 
-    
+
 def main(arguments=None):
-    """ 
+    """
     This function runs the script
-    
+
     :arguments: contains parsed command line parameters
     """
     args = parse_arguments(arguments)
@@ -176,11 +176,11 @@ def main(arguments=None):
 
 
 def parse_arguments(arguments):
-    """ 
+    """
     This function parses command line inputs and returns them for main()
-    
+
     :method: parameter that determines the operation of the script
-    :path: path to .json 
+    :path: path to .json
     :config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """

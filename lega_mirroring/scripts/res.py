@@ -15,10 +15,10 @@ logging.basicConfig(filename='res_log.log',
 
 
 def get_conf(path_to_config):
-    """ 
+    """
     This function reads configuration variables from an external file
-    and returns the configuration variables as a class object 
-    
+    and returns the configuration variables as a class object
+
     :path_to_config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """
@@ -32,10 +32,10 @@ def get_conf(path_to_config):
 
 
 def decrypt(host_url, file_path):
-    """ 
+    """
     This function sends an HTTP request to an active
-    RES microservice and returns a stream of decrypted data 
-    
+    RES microservice and returns a stream of decrypted data
+
     :host_url: address of RES microservice
     :file_path: full path to .cip file to be decrypted
     """
@@ -51,10 +51,10 @@ def decrypt(host_url, file_path):
 
 
 def encrypt(host_url, file_path):
-    """ 
+    """
     This function sends an HTTP request to an active
-    RES microservice and returns a stream of encrypted data 
-    
+    RES microservice and returns a stream of encrypted data
+
     :host_url: address of RES microservice
     :file_path: full path to .bam file to be encrypted
     """
@@ -69,11 +69,11 @@ def encrypt(host_url, file_path):
 
 
 def write_to_file(crypt, feed, chnk, path, ext):
-    """ 
+    """
     This function handles a stream of data and writes
     it to file. The function determines the file extension
     by itself according to the given method (main parameter)
-    
+
     :crypt: operating method given in main
     :feed: stream of decrypted/encrypted data
     :chnk: size of data read from stream and written to file
@@ -99,9 +99,9 @@ def write_to_file(crypt, feed, chnk, path, ext):
 
 
 def log_event(event, host, path):
-    """ 
-    This function logs successes and failures to file 
-    
+    """
+    This function logs successes and failures to file
+
     :event: pass or failed
     :host: address of RES microservice
     :path: full path to original file (before crypt-operations)
@@ -122,9 +122,9 @@ def log_event(event, host, path):
 
 
 def main(arguments=None):
-    """ 
+    """
     This function runs the script
-    
+
     :arguments: contains parsed command line parameters
     """
     args = parse_arguments(arguments)
@@ -134,21 +134,23 @@ def main(arguments=None):
     config = get_conf(conf)
     ext = tuple(config.extensions.split(','))
     if method == 'decrypt':
-        write_to_file(method, decrypt(config.res_url, path), config.chunk_size, path, ext)
+        write_to_file(method, decrypt(config.res_url, path),
+                      config.chunk_size, path, ext)
     elif method == 'encrypt':
-        write_to_file(method, encrypt(config.res_url, path), config.chunk_size, path, ext)
+        write_to_file(method, encrypt(config.res_url, path),
+                      config.chunk_size, path, ext)
     else:
         raise Exception('invalid method, must be \'encrypt\' or \'decrypt\'')
     return
 
 
 def parse_arguments(arguments):
-    """ 
+    """
     This function parses command line inputs and returns them for main()
-    
+
     :method: parameter that determines the operation of the script
              either encrypt or decrypt, can not be left empty
-    :path: path to file to be worked on 
+    :path: path to file to be worked on
     :path_to_config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """

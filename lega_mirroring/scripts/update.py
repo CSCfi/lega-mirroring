@@ -16,10 +16,10 @@ logging.basicConfig(filename='update_log.log',
 
 
 def get_conf(path_to_config):
-    """ 
+    """
     This function reads configuration variables from an external file
-    and returns the configuration variables as a class object 
-    
+    and returns the configuration variables as a class object
+
     :path_to_config: full path to config.ini (or just config.ini if
                      cwd: lega-mirroring)
     """
@@ -34,12 +34,12 @@ def get_conf(path_to_config):
     conf_named = namedtuple("Config", conf.keys())(*conf.values())
     return conf_named
 
-    
+
 def db_init(hostname, username, password, database):
-    """ 
+    """
     This function initializes database connection and returns a connection
     object that will be used as an executale cursor object
-    
+
     :hostname: address of mysql server
     :username: username to log in to mysql server
     :password: password associated with :username: to log in to mysql server
@@ -55,7 +55,7 @@ def db_init(hostname, username, password, database):
 def db_update_file(db, filename, path_archive, path_gridftp):
     """
     This function updates file path and status to database
-    
+
     :db: database connection object
     :path_file: path to file
     :path_archive: path to end storage
@@ -72,12 +72,12 @@ def db_update_file(db, filename, path_archive, path_gridftp):
     db.commit()
     return
 
-    
+
 def lookup_dataset_id(db, file):
     """
     This function finds the dataset id the given file
     belongs to and returns it as a string
-    
+
     :db: database connection object
     :file: datafile belonging to a dataset
     """
@@ -95,17 +95,17 @@ def lookup_dataset_id(db, file):
         for row in result:
             dataset_id = row[0]
     return dataset_id
-    
-    
+
+
 '''*************************************************************'''
 #                         cmd-executable                          #
 '''*************************************************************'''
 
 
 def main(arguments=None):
-    """ 
+    """
     This function runs the script
-    
+
     :arguments: contains parsed command line parameters
     """
     args = parse_arguments(arguments)
@@ -121,15 +121,16 @@ def main(arguments=None):
     # put timestamp to dataset_log table
     file = os.path.join(config.path_archive, args.path)
     dataset_id = lookup_dataset_id(db, file)
-    lega_mirroring.scripts.datasetlogger.main(['date_processing_end', dataset_id, conf])
+    lega_mirroring.scripts.datasetlogger.main(['date_processing_end',
+                                               dataset_id, conf])
     return
 
 
 def parse_arguments(arguments):
-    """ 
+    """
     This function parses command line inputs and returns them for main()
-    
-    :path: path to file that\'s details are updated 
+
+    :path: path to file that\'s details are updated
     :config: full path to config.ini (or just config.ini if
              cwd: lega-mirroring)
     """
