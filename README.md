@@ -3,6 +3,8 @@ This git repository contains scripts for Local EGA data mirroring project. Local
 
 The scripts in this repository are intended to be run in a [luigi](https://github.com/spotify/luigi) workflow according to the overview picture below.
 
+lega-mirroring module is mentioned in [Tryggve's August 2017 Newsletter](https://wiki.neic.no/w/ext/img_auth.php/b/b9/Tryggve_newsletter_august2017.pdf).
+
 # Local EGA Process Overview
 Here is an overview picture of how this module handles files.
 
